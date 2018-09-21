@@ -15,8 +15,9 @@ using namespace std;
 struct TreeNode
 
 {
-	TreeNode *parent_ptr;
+
 	TreeNode **child_ptr;
+	string *address;
 	bool leaf;			//is there a leaf below?
 	int n;	//number of child nodes
 	//isExternal/isInternal?
@@ -30,9 +31,9 @@ public:
 	~Tree();
 	int size() const;
 	bool empty() const;
-	void Split();
+	void Split(TreeNode);
 	TreeNode Root(TreeNode); //returns the Root
-	Tree InsertNode(int, string);
+	void InsertNode(int, string);
 
 protected:
 	void traverse(TreeNode);
@@ -40,8 +41,6 @@ protected:
 private: 
 	TreeNode *_root;
 	int n; 
-
-
 };
 
 
