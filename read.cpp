@@ -1,5 +1,5 @@
 #include "read.h"
-#include "Tree.h"
+#include "tree.h"
 
 int ReadPath(string directory, Tree *t)   //feel free to change to a tree directory 
 {
