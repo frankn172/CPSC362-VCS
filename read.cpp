@@ -1,7 +1,7 @@
 #include "read.h"
 #include "Tree.h"
 
-int ReadPath(string directory, BTreeNode *btn)   //feel free to change to a tree directory 
+int ReadPath(string directory, Tree *t)   //feel free to change to a tree directory 
 {
 	path dir(directory);
 
@@ -20,7 +20,7 @@ int ReadPath(string directory, BTreeNode *btn)   //feel free to change to a tree
 				for (directory_iterator it(dir); it != directory_iterator(); ++it)
 				{	//INSERT STRINGS INTO A DATA STRUCTURE 
 
-					insert(count, (complete(it->path())).string());
+					
 
 					cout << complete(it->path()) << '\n';  //show absolute path
 
