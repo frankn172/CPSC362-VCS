@@ -1,7 +1,7 @@
 #include "read.h"
-#include "Tree.h"
+#include "tree.h"
 
-int ReadPath(string directory, BTreeNode *btn)   //feel free to change to a tree directory 
+int ReadPath(string directory, BTree *t)   //feel free to change to a tree directory 
 {
 	path dir(directory);
 
@@ -15,19 +15,7 @@ int ReadPath(string directory, BTreeNode *btn)   //feel free to change to a tree
 
 			if (is_directory(dir))      //check if it is a directory 
 			{
-				cout << dir.string() << " is a directory containing:\n";
-				int count = 1;
-				for (directory_iterator it(dir); it != directory_iterator(); ++it)
-				{	//INSERT STRINGS INTO A DATA STRUCTURE 
-
-					insert(count, (complete(it->path())).string());
-
-					cout << complete(it->path()) << '\n';  //show absolute path
-
-					cout << it->path().string() << "\n";	//show file 
-
-					count++;
-				}
+				ReadHelper(dir, t);   //recursive function
 			}
 
 			else if (is_regular_file(dir)) //check if it is a file instead
@@ -56,4 +44,26 @@ int ReadPath(string directory, BTreeNode *btn)   //feel free to change to a tree
 
 
 	return 0;
+}
+
+void ReadHelper(path directory, BTree *bt)  
+{
+	cout << directory.string() << " is a directory containing:\n";
+
+	for (directory_iterator it(directory); it != directory_iterator(); ++it)
+	{
+		if (is_regular_file(it->path()))
+		{
+			//INSERT STRINGS INTO A DATA STRUCTURE
+			cout << complete(it->path()) << '\n';  //show absolute path
+
+			cout << it->path().string() << '\n';	//show file 
+		}
+		if (is_directory(it->path()))
+		{	//put in recursion function?
+			ReadHelper(it->path(), bt);
+		}
+
+
+	}
 }
