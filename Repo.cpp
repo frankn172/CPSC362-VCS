@@ -21,7 +21,8 @@ int main()
 	std::cout << "Enter the source directory: ";
 	std::cin >> source;
 	fs::path from{source};
-	//fs::path p{ "D:\\Z" };
+	/*std::string source = "D:\\Z";
+	fs::path from{ source };*/
 	
 	std::string dest;
 	std::cout << "Enter the destination directory: ";
@@ -32,9 +33,15 @@ int main()
 
 	//copy(fs::recursive_directory_iterator(p), fs::recursive_directory_iterator(), std::ostream_iterator<fs::directory_entry>(std::cout, "\n"));
 	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
+
+	/*for (int i = 0; i < container.size(); i++)
+	{
+		std::cout << container[i].path().relative_path().string() << std::endl;
+	}*/
 	
 	for (int i = 0; i < container.size(); i++)
 	{
+		fs::path temp = to;
 		//std::cout << container[i].path().string() << std::endl;
 		if (fs::is_regular_file(container[i].path()))
 		{
@@ -46,11 +53,11 @@ int main()
 			}
 			std::string outputFile = container[i].path().string() + "\\" ;
 			//Create new directory if it doesn't exist
-			to += container[i].path().relative_path().string();
+			temp =  to.string() + container[i].path().relative_path().string();
 			fs::create_directory(to);
 
-			/*to += checksum.toString() ??????
-			to += ".cpp" //or whatever the file extension is. I have no idea how to get it.*/
+			/*temp += checksum.toString() ??????
+			temp += ".cpp" //or whatever the file extension is. I have no idea how to get it.*/
 
 			std::ofstream outFile(/*the new directory with the checksum file name goes here*/);
 			while (infile.get(c))
@@ -60,6 +67,11 @@ int main()
 			infile.close();
 			//outFile.close(); //uncomment this when you have an argument for the outFile
 			
+		}
+		else if (fs::is_directory(container[i].path()))
+		{
+			temp = to.string() + container[i].path().relative_path().string();
+			//fs::create_directory(temp);
 		}
 	}
 
