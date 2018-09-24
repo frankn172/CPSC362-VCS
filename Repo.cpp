@@ -42,6 +42,7 @@ int main()
 		}
 		else if (fs::is_regular_file(container[i].path()))
 		{
+			/*Should put the checksum in another file as a function an call it or something*/
 			std::ifstream infile(container[i].path().string());
 			char c;
 			int checkSum = 0;
