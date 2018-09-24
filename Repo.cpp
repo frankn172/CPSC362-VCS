@@ -20,12 +20,12 @@ int main()
 {
 	std::string source;
 	std::cout << "Enter the source directory: ";
-	std::cin >> source;
+	std::getline(cin, source);
 	fs::path from{source};
 	
 	std::string dest;
 	std::cout << "Enter the destination directory: ";
-	std::cin >> dest;
+	std::getline(cin, dest);
 	fs::path to{dest};
 
 	std::vector<fs::directory_entry> container(directorySize(source));
@@ -36,9 +36,9 @@ int main()
 	{
 		if (fs::is_directory(container[i].path()))
 		{
-		std::string to2 = dest + "\\" + container[i].path().relative_path().string();
-		fs::path temp{ to2 };
-		fs::create_directories(temp);
+			std::string to2 = dest + "\\" + container[i].path().relative_path().string();
+			fs::path temp{ to2 };
+			fs::create_directories(temp);
 		}
 		else if (fs::is_regular_file(container[i].path()))
 		{
