@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <cmath>
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 
@@ -21,8 +22,6 @@ int main()
 	std::cout << "Enter the source directory: ";
 	std::cin >> source;
 	fs::path from{source};
-	/*std::string source = "D:\\Z";
-	fs::path from{ source };*/
 	
 	std::string dest;
 	std::cout << "Enter the destination directory: ";
@@ -31,17 +30,10 @@ int main()
 
 	std::vector<fs::directory_entry> container(directorySize(source));
 
-	//copy(fs::recursive_directory_iterator(p), fs::recursive_directory_iterator(), std::ostream_iterator<fs::directory_entry>(std::cout, "\n"));
 	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
-
-	/*for (int i = 0; i < container.size(); i++)
-	{
-		std::cout << container[i].path().relative_path().string() << std::endl;
-	}*/
 	
 	for (int i = 0; i < container.size(); i++)
 	{
-		//std::cout << container[i].path().string() << std::endl;
 		if (fs::is_directory(container[i].path()))
 		{
 		std::string to2 = dest + "\\" + container[i].path().relative_path().string();
@@ -56,7 +48,6 @@ int main()
 			int counter = 1;
 			while (infile.get(c))
 			{
-				//TODO checksum might go here
 				if (counter % 5 == 1)
 				{
 					checkSum += (c * 1);
@@ -79,26 +70,27 @@ int main()
 				}
 				counter++;
 			}
+			infile.close();
+
+			std::ifstream newInFile(container[i].path().string());
 			std::string outputFile = dest  + "\\" + container[i].path().relative_path().string() + "\\";
-			//Create new directory if it doesn't exist
+
 			fs::path temp{outputFile.c_str()};
 			fs::create_directories(outputFile);
 
-			outputFile = outputFile + std::to_string(checkSum) + container[i].path().extension().string();
-
-			//temp += std::to_string(checkSum);
-			//temp += ".cpp" //or whatever the file extension is. I have no idea how to get it.
+			int m = (std::pow(2, 31)) - 1;
+			checkSum = checkSum % m;
+			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter - 1) + container[i].path().extension().string();
 			
 			std::ofstream outFile(outputFile);
-			char d;
-			while (!infile.eof())
+			std::string d;
+			while (std::getline(newInFile, d))
 			{
-				infile.get(d);//this will work once outFile gets the checksum name for the directory
 				outFile << d;
+				outFile << "\n";
 			}
-			infile.close();
-			outFile.close(); //uncomment this when you have an argument for the outFile
-			
+			newInFile.close();
+			outFile.close();
 		}
 	}
 
