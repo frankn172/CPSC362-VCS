@@ -41,37 +41,64 @@ int main()
 	
 	for (int i = 0; i < container.size(); i++)
 	{
-		fs::path temp = to;
 		//std::cout << container[i].path().string() << std::endl;
-		if (fs::is_regular_file(container[i].path()))
+		if (fs::is_directory(container[i].path()))
+		{
+		std::string to2 = dest + "\\" + container[i].path().relative_path().string();
+		fs::path temp{ to2 };
+		fs::create_directories(temp);
+		}
+		else if (fs::is_regular_file(container[i].path()))
 		{
 			std::ifstream infile(container[i].path().string());
 			char c;
+			int checkSum = 0;
+			int counter = 1;
 			while (infile.get(c))
 			{
 				//TODO checksum might go here
+				if (counter % 5 == 1)
+				{
+					checkSum += (c * 1);
+				}
+				else if (counter % 5 == 2)
+				{
+					checkSum += (c * 3);
+				}
+				else if (counter % 5 == 3)
+				{
+					checkSum += (c * 7);
+				}
+				else if (counter % 5 == 4)
+				{
+					checkSum += (c * 11);
+				}
+				else if (counter % 5 == 0)
+				{
+					checkSum += (c * 17);
+				}
+				counter++;
 			}
-			std::string outputFile = container[i].path().string() + "\\" ;
+			std::string outputFile = dest  + "\\" + container[i].path().relative_path().string() + "\\";
 			//Create new directory if it doesn't exist
-			temp =  to.string() + container[i].path().relative_path().string();
-			fs::create_directory(to);
+			fs::path temp{outputFile.c_str()};
+			fs::create_directories(outputFile);
 
-			/*temp += checksum.toString() ??????
-			temp += ".cpp" //or whatever the file extension is. I have no idea how to get it.*/
+			outputFile = outputFile + std::to_string(checkSum) + container[i].path().extension().string();
 
-			std::ofstream outFile(/*the new directory with the checksum file name goes here*/);
-			while (infile.get(c))
+			//temp += std::to_string(checkSum);
+			//temp += ".cpp" //or whatever the file extension is. I have no idea how to get it.
+			
+			std::ofstream outFile(outputFile);
+			char d;
+			while (!infile.eof())
 			{
-				/*outFile << c;  //this will work once outFile gets the checksum name for the directory */
+				infile.get(d);//this will work once outFile gets the checksum name for the directory
+				outFile << d;
 			}
 			infile.close();
-			//outFile.close(); //uncomment this when you have an argument for the outFile
+			outFile.close(); //uncomment this when you have an argument for the outFile
 			
-		}
-		else if (fs::is_directory(container[i].path()))
-		{
-			temp = to.string() + container[i].path().relative_path().string();
-			//fs::create_directory(temp);
 		}
 	}
 
