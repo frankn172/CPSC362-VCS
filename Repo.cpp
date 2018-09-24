@@ -20,12 +20,12 @@ int main()
 {
 	std::string source;
 	std::cout << "Enter the source directory: ";
-	std::getline(cin, source);
+	std::getline(std::cin, source);
 	fs::path from{source};
 	
 	std::string dest;
 	std::cout << "Enter the destination directory: ";
-	std::getline(cin, dest);
+	std::getline(std::cin, dest);
 	fs::path to{dest};
 
 	std::vector<fs::directory_entry> container(directorySize(source));
