@@ -8,13 +8,13 @@ Intro: TBD
 
 Files: TBD
 
-External Requirements: Boost C++ Library
+External Requirements: Boost C++ Library, Version 1_68_0. 
 
 Setup and Installation: The Boost Library needs to be downloaded and installed.
 
 Sample/Results: 
 
-Features:
+Features: 
 
 Bugs: None
 
