@@ -10,7 +10,7 @@ Files: TBD
 
 External Requirements: Boost C++ Library
 
-Setup and Installation: The Boost Library needs to be downlaoded and installed.
+Setup and Installation: The Boost Library needs to be downloaded and installed.
 
 Sample/Results: 
 
