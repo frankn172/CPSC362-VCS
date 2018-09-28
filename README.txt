@@ -18,13 +18,14 @@ if it is at a file, the name is put through the checksum to get the ArtifactID.
 The original file name is copied to make a new folder in the destination directory and the file with ArtifactID name is copied inside it.
 
 Files: 
-main.cpp, README.txt
+Header.h, main.cpp, README.txt
 
 External Requirements: 
 Boost C++ Library, Version 1_68_0. 
 
 Setup and Installation: 
 The Boost Library needs to be downloaded and installed.
+The program is compiled with Microsoft Visual Studio 2017 and tested on Microsoft Windows 10.
 
 Sample/Results: 
 
