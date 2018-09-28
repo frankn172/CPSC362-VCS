@@ -32,3 +32,37 @@ int directorySize(std::string p)
 	}
 	return i;
 }
+
+/**
+ * Calculate the weighted checksum.
+ *
+ * @param char c the character to get the checksum from based on its ASCII value
+ * @param int counter the index of char c within a file
+ * @return int the weighted checksum
+**/
+int checksum(char c, int counter)
+{
+	int checkSum = 0;
+	switch (counter % 5)
+	{
+	case 0:
+		checkSum += (c * 1);
+		break;
+	case 1:
+		checkSum += (c * 3);
+		break;
+	case 2:
+		checkSum += (c * 7);
+		break;
+	case 3:
+		checkSum += (c * 11);
+		break;
+	case 4:
+		checkSum += (c * 17);
+		break;
+	}
+	//prevent overflowing in case the checksum gets too large
+	int m = (std::pow(2, 31)) - 1;
+	checkSum = checkSum % m;
+	return checkSum;
+}
