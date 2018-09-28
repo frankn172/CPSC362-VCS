@@ -55,4 +55,5 @@ Converts the file names from the given directory using the checksum provided and
 There are no missing features.
 
 Bugs: 
-None
+The program only works with folders, plain text files (.txt, .c, .cpp, etc.), and binary files (.bin)
+The program does not truncate the path in the destination folder. For example: if the source is C:\Downloads\temp1\temp2 and the destination is C:\test, the repository is in C:\test\Downloads\temp1\temp2 instead of C:\test\temp2
