@@ -45,7 +45,7 @@ Sample/Results:
 
 Features: 
 Copies all the files and folders from the given directory into a new repository.
-Converts the file names from the given directory using the checksum provided and saves those files under the new names into the new repository. 
+Converts the file names from the given directory using the checksum provided and saves those files under the ArtifactID into the new repository. 
 There are no missing features.
 
 Bugs: 
