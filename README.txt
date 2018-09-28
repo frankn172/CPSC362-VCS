@@ -30,13 +30,18 @@ Sample/Results:
   Input:
   SampleInput/
     this.txt
-    is.txt
+    is.c
     NextFolder/
       aTest.txt
-      input.txt
+      input.c
       
   Result:
-  
+  SampleInput/
+    2428-L4.txt
+    450-L2.c
+    NextFolder/
+      4293-L5.txt
+      4478-L5.c
 
 Features: 
 Copies all the files and folders from the given directory into a new repository.
