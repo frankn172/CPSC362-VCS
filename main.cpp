@@ -1,6 +1,10 @@
 /**
  * CPSC 362 VCS Project
- * Copyright(C) 2018 Josh Gomberg, Michael Li, Frank Ngo, & Wellson Pan
+ * Copyright(C) 2018 Team TBD
+ * @author Josh Gomberg		jgomberg93@gmail.com
+ * @author Michael Li		limichael1099419@gmail.com
+ * @author Frank Ngo		frank.ngo@csu.fullerton.edu
+ * @author Wellson Pan		dihydrogenmonoxide1337@gmail.com
 **/
 
 #include <iostream>
@@ -14,8 +18,8 @@ namespace fs = boost::filesystem;
 /**
  * Find the total number of files within a folder and its sub-folders.
  *
- * @param string p path to the folder
- * @return int the size of that folder
+ * @param string p	path to the folder
+ * @return int		the size of that folder
 **/
 int directorySize(std::string p)
 {
