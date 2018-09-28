@@ -41,33 +41,14 @@ int main()
 		//checksum the file to get ArtifactID
 		else if (fs::is_regular_file(container[i].path()))
 		{
-			/*Should put the checksum in another file as a function an call it or something*/
+			//go through directory path to file and get its checksum
 			std::ifstream infile(container[i].path().string());
 			char c;
 			int checkSum = 0;
-			int counter = 1;
+			int counter = 0;
 			while (infile.get(c))
 			{
-				if (counter % 5 == 1)
-				{
-					checkSum += (c * 1);
-				}
-				else if (counter % 5 == 2)
-				{
-					checkSum += (c * 3);
-				}
-				else if (counter % 5 == 3)
-				{
-					checkSum += (c * 7);
-				}
-				else if (counter % 5 == 4)
-				{
-					checkSum += (c * 11);
-				}
-				else if (counter % 5 == 0)
-				{
-					checkSum += (c * 17);
-				}
+				checkSum += checksum(c, counter);
 				counter++;
 			}
 			infile.close();
@@ -78,9 +59,7 @@ int main()
 			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);
 
-			int m = (std::pow(2, 31)) - 1;
-			checkSum = checkSum % m;
-			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter - 1) + container[i].path().extension().string();
+			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + container[i].path().extension().string();
 
 			std::ofstream outFile(outputFile);
 			std::string d;
