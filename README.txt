@@ -4,8 +4,11 @@ CPSC 362 Section 1
 Project Name: 
 VCS Project 1
 
-Team Name and Members: 
-TBD, Joshua Gomberg, Michael Li, Wellson Tan, Frank Ngo
+Team Name: 
+TBD
+
+Team Members
+Joshua Gomberg, Michael Li, Frank Ngo, Wellson Pan
 
 Intro: 
 The source directory and destination directory are first prompted from the user.
