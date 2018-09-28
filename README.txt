@@ -13,7 +13,8 @@ Joshua Gomberg, Michael Li, Frank Ngo, Wellson Pan
 Intro: 
 The source directory and destination directory are first prompted from the user.
 The program then loops through the source directory to find out how many files are in it.
-It then loops through source directory and if the path is at a folder it is copied to the destination directory; if it is at a file the name is put through the checksum to get the ArtifactID then copied to the destination directory.
+It then loops through source directory and if the path is at a folder it is copied to the destination directory;
+if it is at a file the name is put through the checksum to get the ArtifactID then copied to the destination directory.
 
 Files: 
 main.cpp, README.txt
