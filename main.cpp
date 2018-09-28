@@ -45,12 +45,16 @@ int main()
 	
 	for (int i = 0; i < container.size(); i++)
 	{
+		//if the path points to a valid directory within "from"
+		//duplicate it in "dest" inside the correct parent directory
 		if (fs::is_directory(container[i].path()))
 		{
 			std::string to2 = dest + "\\" + container[i].path().relative_path().string();
 			fs::path temp{ to2 };
 			fs::create_directories(temp);
 		}
+		//if the path points to a file
+		//checksum the file to get ArtifactID
 		else if (fs::is_regular_file(container[i].path()))
 		{
 			/*Should put the checksum in another file as a function an call it or something*/
