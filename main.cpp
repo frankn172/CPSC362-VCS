@@ -52,15 +52,19 @@ int main()
 				counter++;
 			}
 			infile.close();
-
+			
+			//reopens the source file since it can't be iterated through a second time in one opening
 			std::ifstream newInFile(container[i].path().string());
+			//creates the name of the destination
 			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
-
-			fs::path temp{ outputFile.c_str() };
+			
+			//creates the directories for the new checksum file
 			fs::create_directories(outputFile);
-
+			
+			//creates the name for the destination file with the checksum as the new name
 			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + container[i].path().extension().string();
-
+			
+			//opens the new file at the new location and copies content of source file to desination file
 			std::ofstream outFile(outputFile);
 			std::string d;
 			while (std::getline(newInFile, d))
