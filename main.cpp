@@ -6,49 +6,27 @@
  * @author Frank Ngo frank.ngo@csu.fullerton.edu
  * @author Wellson Pan dihydrogenmonoxide1337@gmail.com
  *
- * main.cpp the main source code
+ * main.cpp contains the main source code
 **/
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
-#include <cmath>
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-
-/**
- * Find the total number of files within a folder and its sub-folders.
- *
- * @param string p path to the folder
- * @return int the size of that folder
-**/
-int directorySize(std::string p)
-{
-	int i = 0;
-	for (fs::recursive_directory_iterator it(p); it != fs::recursive_directory_iterator(); ++it)
-	{
-		i++;
-	}
-	return i;
-}
+#include "Header.h"
 
 int main()
 {
 	std::string source;
 	std::cout << "Enter the source directory: ";
 	std::getline(std::cin, source);
-	fs::path from{source};
-	
+	fs::path from{ source };
+
 	std::string dest;
 	std::cout << "Enter the destination directory: ";
 	std::getline(std::cin, dest);
-	fs::path to{dest};
+	fs::path to{ dest };
 
 	std::vector<fs::directory_entry> container(directorySize(source));
 
 	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
-	
+
 	for (int i = 0; i < container.size(); i++)
 	{
 		//if the path points to a valid directory within "from"
@@ -95,15 +73,15 @@ int main()
 			infile.close();
 
 			std::ifstream newInFile(container[i].path().string());
-			std::string outputFile = dest  + "\\" + container[i].path().relative_path().string() + "\\";
+			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
 
-			fs::path temp{outputFile.c_str()};
+			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);
 
 			int m = (std::pow(2, 31)) - 1;
 			checkSum = checkSum % m;
 			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter - 1) + container[i].path().extension().string();
-			
+
 			std::ofstream outFile(outputFile);
 			std::string d;
 			while (std::getline(newInFile, d))
