@@ -66,3 +66,23 @@ int checksum(char c, int counter)
 	checkSum = checkSum % m;
 	return checkSum;
 }
+
+void createManifest()
+{
+	//TODO
+}
+
+void pushToRepo()
+{
+	//TODO
+}
+
+void pullFromRepo()
+{
+	//TODO
+}
+
+void labelManifest()
+{
+	//TODO
+}

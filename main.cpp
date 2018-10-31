@@ -11,7 +11,21 @@
 
 #include "Header.h"
 
-int main()
+int prompt()
+{
+	int input;
+	std::cout << "What would you like to do?" << std::endl;
+	std::cout << "Enter the number corresponding with the command" << std::endl;
+	std::cout << "1. Create repo" << std::endl;
+	std::cout << "2. Push to repo" << std::endl;
+	std::cout << "3. Pull from repo" << std::endl;
+	std::cout << "4. Label manifest" << std::endl;
+	std::cout << "5. Exit" << std::endl;
+	std::cin >> input;
+	return input;
+}
+
+void createRepo()
 {
 	std::string source;
 	std::cout << "Enter the source directory: ";
@@ -31,15 +45,15 @@ int main()
 	{
 		//if the path points to a valid directory within "from"
 		//duplicate it in "dest" inside the correct parent directory
-		if (fs::is_directory(container[i].path()))
+		/*if (fs::is_directory(container[i].path()))
 		{
 			std::string to2 = dest + "\\" + container[i].path().relative_path().string();
 			fs::path temp{ to2 };
 			fs::create_directories(temp);
-		}
+		}*/
 		//if the path points to a file
 		//checksum the file to get ArtifactID
-		else if (fs::is_regular_file(container[i].path()))
+		if (fs::is_regular_file(container[i].path()))
 		{
 			//go through directory path to file and get its checksum
 			std::ifstream infile(container[i].path().string());
@@ -55,6 +69,7 @@ int main()
 
 			std::ifstream newInFile(container[i].path().string());
 			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
+			std::cout << container[i].path().filename().string() << std::endl;
 
 			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);
@@ -72,6 +87,38 @@ int main()
 			outFile.close();
 		}
 	}
+}
+
+int main()
+{
+	int input = prompt();
+
+	while (input != 5)
+	{
+		if (input == 1)
+		{
+			createRepo();
+		}
+		else if (input == 2)
+		{
+			//call push to repo function
+		}
+		else if (input == 3)
+		{
+			//call pull from repo function
+		}
+		else if (input == 4)
+		{
+			//call label manifest function
+		}
+		else
+		{
+			std::cout << "Please enter a valid input" << std::endl;
+			input = prompt();
+		}
+	}
+	std::cout << "Closing program" << std::endl;
+
 
 	system("Pause");
 	return 0;
