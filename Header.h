@@ -1,14 +1,6 @@
 #pragma once
-/**
-* CPSC 362 VCS Project
-* Copyright(C) 2018 Team TBD
-* @author Josh Gomberg jgomberg93@gmail.com
-* @author Michael Li limichael1099419@gmail.com
-* @author Frank Ngo frank.ngo@csu.fullerton.edu
-* @author Wellson Pan dihydrogenmonoxide1337@gmail.com
-*
-* Header.h contains the libraries and functions used in main.cpp
-**/
+#ifndef HEADER_H
+#define HEADER_H
 
 #include <iostream>
 #include <string>
@@ -82,32 +74,45 @@ void compareFiles()
 
 }
 
-void createManifest()
+void createManifest(fs::path source)
 {
-	//source 
-	fs::path cwd(fs::current_path());
+	fs::path parent = source.parent_path();	//parent folder 
+	
+	fs::path cwd(fs::current_path());	//initial position 
 
-	//std::cout << "Current path is : " << source << std::endl;
-
-	std::ofstream manifest;
-	std::string t = currentDateAndTime();
-	manifest.open(t);
-
-	//put creation date in the file 
-	manifest << t << std::endl;
-
-	//all the files in the directory -> outputted into the manifest files. 
-	std::vector<fs::directory_entry> container(directorySize(cwd));
-
-	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
-
-	for (int i = 0; i < container.size(); i++)
+	//inside the parent folder 
+	fs::current_path(parent);
+	if (!fs::create_directory("Manifest"))
 	{
-		std::string fullpath = cwd + "\\" + container[i].path().relative_path().string() + "\\";
-		manifest << fullpath << std::endl;
-	}
+		//compare files 
 
-	manifest.close();
+	}
+	else
+	{	//create a new Manifest files 
+
+		//inside the Manifest folder 
+		std::string m = parent.string() + "Manifest";
+		fs::current_path(m);
+
+		std::ofstream manifest;
+		std::string t = currentDateAndTime() + ".txt";
+		manifest.open(t);
+
+		//all the files in the directory -> outputted into the manifest files. 
+		std::vector<fs::directory_entry> container(directorySize(source.string()));
+
+		copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
+
+		for (int i = 0; i < container.size(); i++)
+		{
+			//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
+			//manifest << fullpath << std::endl;
+
+			manifest << container[i].path().relative_path().string() << std::endl;
+		}
+
+		manifest.close();
+	}
 }
 
 void pushToRepo()
@@ -117,19 +122,31 @@ void pushToRepo()
 
 }
 
-void pullFromRepo()
+void pullFromRepo(fs::path source, fs::path dest)
 {
 	//TODO
-	//compare files -> see what's different -> add into cwd
-	fs::path cwd(fs::current_path());
+	if (!fs::exists("Manifest"))
+	{
+		createRepo();
+	}
+	else
+	{
+		std::ifstream manifest1;
+		std::ifstream manifest2;
 
-	std::vector<std::string> changed;
+		manifest1.open("");//first manifest file 
+		manifest2.open("");//second
+	}
 
-	//add to current directory changed files
-	//create a manifest file ?
 }
 
 void labelManifest()
 {
 	//TODO
 }
+
+
+
+
+
+#endif
