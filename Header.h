@@ -79,10 +79,40 @@ void pushToRepo()
 
 void pullFromRepo()
 {
-	//TODO
+	std::string line, label;
+	std::size_t pos;
+	
+	std::ifstream labelFileIn("labels.txt");
+
+	std::cout << "What is the label or manifest name you would like to pull? ";
+	std::cin >> label;
+
+	while (labelFileIn.good()) {
+
+		std::getline(labelFileIn, line);
+
+		pos = line.find(label);
+
+		if (pos != std::string::npos) {
+			std::cout << "found\n";
+			break;
+		}
+	}
+
+	//line string will contain the name of the manifest to be pulled
 }
 
 void labelManifest()
 {
-	//TODO
+	std::string manName, label;
+
+	std::cout << "What is the name of the manifest file? ";
+	std::cin >> manName;
+
+	std::cout << "What label would you like to give the manifest file? ";
+	std::cin >> label;
+	
+	std::ofstream labelFile("labels.txt", std::ios_base::app);
+
+	labelFile << manName << "\t" << label << " \n";
 }

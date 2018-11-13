@@ -98,18 +98,22 @@ int main()
 		if (input == 1)
 		{
 			createRepo();
+			input = prompt();
 		}
 		else if (input == 2)
 		{
-			//call push to repo function
+			prompt();
+			input = prompt();
 		}
 		else if (input == 3)
 		{
-			//call pull from repo function
+			prompt();
+			input = prompt();
 		}
 		else if (input == 4)
 		{
-			//call label manifest function
+			labelManifest();
+			input = prompt();
 		}
 		else
 		{
