@@ -79,7 +79,7 @@ void pushToRepo()
 
 void pullFromRepo()
 {
-	std::string line, label;
+	std::string line, label, manName;
 	std::size_t pos;
 	
 	std::ifstream labelFileIn("labels.txt");
@@ -94,12 +94,14 @@ void pullFromRepo()
 		pos = line.find(label);
 
 		if (pos != std::string::npos) {
-			std::cout << "found\n";
 			break;
 		}
 	}
 
-	//line string will contain the name of the manifest to be pulled
+	pos = line.find("\t");
+	manName = line.substr(0, pos);
+	
+	std::cout << manName << std::endl;
 }
 
 void labelManifest()

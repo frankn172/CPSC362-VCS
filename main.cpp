@@ -107,7 +107,7 @@ int main()
 		}
 		else if (input == 3)
 		{
-			prompt();
+			pullFromRepo();
 			input = prompt();
 		}
 		else if (input == 4)
