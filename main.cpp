@@ -82,30 +82,16 @@ int main()
 	while (input != 5)
 	{
 		if (input == 1)
-		{
 			createRepo();
-			input = prompt();
-		}
 		else if (input == 2)
-		{
 			prompt();
-			input = prompt();
-		}
 		else if (input == 3)
-		{
 			pullFromRepo();
-			input = prompt();
-		}
 		else if (input == 4)
-		{
 			labelManifest();
-			input = prompt();
-		}
 		else
-		{
 			std::cout << "Please enter a valid input" << std::endl;
-			input = prompt();
-		}
+		input = prompt();
 	}
 	std::cout << "Closing program" << std::endl;
 
