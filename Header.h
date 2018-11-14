@@ -19,6 +19,7 @@
 #include <chrono>
 #include <ratio>
 #include <boost/filesystem.hpp>
+#include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
 /**
@@ -71,34 +72,104 @@ int checksum(char c, int counter)
 	return checkSum;
 }
 
+std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path file)
+{
+	std::vector<std::string> changed;
+	std::ifstream latest_manifest(file.string());
+	std::string line;
+	int i = 0;
+
+	do {
+		std::getline(latest_manifest, line);
+		changed.push_back(line);
+		for (std::size_t j = 0; j < current.size(); j++)
+		{
+			if (current[j] == changed[i])
+				changed.erase(current.begin() + i);
+		}
+		i++;
+	} while (latest_manifest.good());
+
+
+	return changed;
+}
+
+fs::path MostRecentManifest(fs::path man_dir)
+{
+
+	fs::path latest_manifest;
+	std::time_t latest_tm{};
+
+	for (auto&& entry : boost::make_iterator_range(fs::directory_iterator(man_dir), {})) {
+		fs::path p = entry.path();
+		if (is_regular_file(p) && p.extension() == ".txt")
+		{
+			std::time_t timestamp = fs::last_write_time(p);
+			if (timestamp > latest_tm) {
+				latest_manifest = p;
+				latest_tm = timestamp;
+			}
+		}
+	}
+
+	if (latest_manifest.empty())
+		std::cout << "Nothing found\n";
+	else
+		return latest_manifest;
+}
+
 void createManifest(fs::path source)
 {
 	std::string manifest_path = source.parent_path().string() + "\\" + "Manifest";
-	fs::path man(manifest_path);
-
-	std::vector<fs::directory_entry> container(directorySize(source.string()));
-	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
-
-	//CREATING MANIFEST DIRECTORY
-	if (!fs::create_directory(man.string()))
-		std::cerr << "Manifest directory already exists.\n";
-
-	//CREATING MANIFEST FILE
 	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
 	std::chrono::system_clock::time_point today = std::chrono::system_clock::now();
 	time_t tt;
 	tt = std::chrono::system_clock::to_time_t(today);
-	std::string t = man.string() + "\\" + ctime(&tt);
-	std::ofstream manifest;
-	//if (!manifest(t))
-		//std::cerr << "Couldn't open the file\n";
+	std::string currentTime = ctime(&tt);
+	std::string t = manifest_path + "\\" + currentTime;
 
-	for (int i = 0; i < container.size(); i++)
+	std::vector<fs::directory_entry> container(directorySize(source.string()));
+	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
+
+
+	//CREATING MANIFEST DIRECTORY
+	if (fs::create_directory(manifest_path))
 	{
-		//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
-		manifest << container[i].path().relative_path().string() << std::endl;
+		std::cerr << "Manifest directory already exists.\n";
+
+		//CREATING MANIFEST FILE
+		std::ofstream manifest;
+		if (manifest.fail())
+			std::cerr << "Couldn't open the file\n";
+
+		std::string currentTime = ctime(&tt);
+		manifest << currentTime << std::endl;
+		for (int i = 0; i < container.size(); i++)
+		{
+			//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
+			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
+		}
+
+		manifest.close();
 	}
-	manifest.close();
+	else
+	{
+		std::ofstream manifest;
+		fs::path man(manifest_path);
+		fs::path recent(MostRecentManifest(man).string());
+		std::vector<std::string> vec;
+		for (int i = 0; i < container.size(); i++)
+		{
+			vec.push_back(container[i].path().relative_path().string());
+		}
+		vec = compareFiles(vec, source.string()); //compare files function is not complete
+		for (int i = 0; i < vec.size(); i++)
+		{
+			manifest << vec[i] << "\t" << currentTime << std::endl;
+		}
+
+		manifest.close();
+	}
 }
 
 void pushToRepo()
@@ -146,38 +217,4 @@ void labelManifest()
 	std::ofstream labelFile("labels.txt", std::ios_base::app);
 
 	labelFile << manName << "\t" << label << " \n";
-}
-
-std::vector<std::string> compareFiles(std::string source_f, std::string destination_f)
-{
-	std::ifstream source(source_f);
-	std::ifstream destination(destination_f);
-	std::string line;
-
-	std::vector<std::string> src, dest;
-
-	int i = 0, j = 0;
-
-	do {
-		std::getline(source, line);
-		src.push_back(line);
-	} while (source.good());
-
-	do {
-		std::getline(destination, line);
-		dest.push_back(line);
-	} while (destination.good());
-
-	for (std::size_t a = 0; a < src.size(); a++)
-	{
-		for (std::size_t b = 0; b < dest.size(); b++)
-		{
-			if (dest[b] == src[a])
-			{
-				dest.erase(dest.begin() + b);
-				std::cout << dest[b] << std::endl;
-			}
-		}
-	}
-	return dest;
 }

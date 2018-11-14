@@ -22,6 +22,7 @@ int prompt()
 	std::cout << "4. Label manifest" << std::endl;
 	std::cout << "5. Exit" << std::endl;
 	std::cin >> input;
+	std::cin.ignore(256, '\n');
 	return input;
 }
 
