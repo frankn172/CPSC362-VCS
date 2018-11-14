@@ -94,7 +94,7 @@ std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path
 	std::string line;
 	int i = 0;
 
-	do 
+	do
 	{
 		std::getline(latest_manifest, line);
 		changed.push_back(line);
@@ -113,13 +113,13 @@ fs::path MostRecentManifest(fs::path man_dir)
 	fs::path latest_manifest;
 	std::time_t latest_tm{};
 
-	for (auto&& entry : boost::make_iterator_range(fs::directory_iterator(man_dir), {})) 
+	for (auto&& entry : boost::make_iterator_range(fs::directory_iterator(man_dir), {}))
 	{
 		fs::path p = entry.path();
 		if (is_regular_file(p) && p.extension() == ".txt")
 		{
 			std::time_t timestamp = fs::last_write_time(p);
-			if (timestamp > latest_tm) 
+			if (timestamp > latest_tm)
 			{
 				latest_manifest = p;
 				latest_tm = timestamp;
@@ -132,19 +132,24 @@ fs::path MostRecentManifest(fs::path man_dir)
 		return latest_manifest;
 }
 
-void createManifest(fs::path source)
+std::string getCurrentTime()
 {
-	std::string manifest_path = source.parent_path().string() + "\\" + "Manifest";
 	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
 	std::chrono::system_clock::time_point today = std::chrono::system_clock::now();
 	time_t tt;
 	tt = std::chrono::system_clock::to_time_t(today);
 	std::string currentTime = ctime(&tt);
+	return currentTime;
+}
+
+void createManifest(fs::path source)
+{
+	std::string manifest_path = source.parent_path().string() + "\\" + "Manifest";
+	std::string currentTime = getCurrentTime();
 	std::string t = manifest_path + "\\" + currentTime;
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
-
 
 	//CREATING MANIFEST DIRECTORY
 	if (fs::create_directory(manifest_path))
@@ -155,15 +160,13 @@ void createManifest(fs::path source)
 		std::ofstream manifest;
 		if (manifest.fail())
 			std::cerr << "Couldn't open the file\n";
-		tt = std::chrono::system_clock::to_time_t(today);
-		std::string currentTime = ctime(&tt);
+		currentTime = getCurrentTime();
 		manifest << currentTime << std::endl;
 		for (int i = 0; i < container.size(); i++)
 		{
 			//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
 			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
 		}
-
 		manifest.close();
 	}
 	else
@@ -200,9 +203,8 @@ void pullFromRepo()
 	std::cout << "What is the label or manifest name you would like to pull? ";
 	std::cin >> label;
 
-	while (labelFileIn.good()) 
+	while (labelFileIn.good())
 	{
-
 		std::getline(labelFileIn, line);
 		pos = line.find(label);
 		if (pos != std::string::npos)
