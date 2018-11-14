@@ -2,7 +2,7 @@ Class Name:
 	CPSC 362 Section 1
 
 Project Name: 
-	VCS Project 1
+	VCS Project 2
 
 Team Name: 
 	TBD (this is our actual TLA)
@@ -11,10 +11,19 @@ Team Members:
 	Joshua Gomberg, Michael Li, Frank Ngo, Wellson Pan
 
 Intro: 
-	The source directory and destination directory are first prompted from the user.
-	The program then loops through the source directory to find out how many files are in it.
-	It then loops through source directory and if the path is at a folder it is copied to the destination directory; if it is at a file, the name is put through the checksum to get the ArtifactID. 
-	The original file name is copied to make a new folder in the destination directory and the file with ArtifactID name is copied inside it.
+	The user is first prompted with a menu.
+	They can choose if they'd like to crete a repo, push or pull to the repo, label a manifest, or exit.
+	If the user chooses to create a repo then:
+		The program then loops through the source directory to find out how many files are in it.
+		It then loops through source directory and if the path is at a folder it is copied to the destination directory;			if it is at a file, the name is put through the checksum to get the ArtifactID. 
+		The original file name is copied to make a new folder in the destination directory and the file with ArtifactID 			name is copied inside it.
+	If the user chooses to push to the repo:
+		The program 
+	If the user chooses to pull from the repo:
+		The program
+	If the user chooses to label a manifest:
+		The program prompts the user for the file name of the manifest they would like to label, then prompts them for 				the label they would like to give it.
+	Once a command is executed the user is brought back to the main prompt and can exit or execute another command.
 
 Files: 
 	Header.h, main.cpp, README.txt
