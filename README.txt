@@ -15,14 +15,14 @@ Intro:
 	They can choose if they'd like to crete a repo, push or pull to the repo, label a manifest, or exit.
 	If the user chooses to create a repo:
 		The program then loops through the source directory to find out how many files are in it.
-		It then loops through source directory and if the path is at a folder it is copied to the destination directory;			if it is at a file, the name is put through the checksum to get the ArtifactID. 
-		The original file name is copied to make a new folder in the destination directory and the file with ArtifactID 			name is copied inside it.
+		It then loops through source directory and if the path is at a folder it is copied to the destination directory; if it is at a file, the name is put through the checksum to get the ArtifactID. 
+		The original file name is copied to make a new folder in the destination directory and the file with ArtifactID name is copied inside it.
 	If the user chooses to push to the repo:
 		The program //////////
 	If the user chooses to pull from the repo:
 		The program /////////
 	If the user chooses to label a manifest:
-		The program prompts the user for the file name of the manifest they would like to label, then prompts them for 				the label they would like to give it. The manifest file name and label are stored in a separate text 				file for reference.
+		The program prompts the user for the file name of the manifest they would like to label, then prompts them for the label they would like to give it. The manifest file name and label are stored in a separate text file for reference.
 	Once a command is executed the user is brought back to the main prompt and can execute another command or exit.
 
 Files: 
@@ -47,7 +47,7 @@ Sample/Results:
 
 Features: 
 	Copies all the files and folders from the given directory into a new repository.
-	Converts the file names from the given directory using the checksum provided and saves those files under the ArtifactID 		into the new repository inside a folder with the original file name. 
+	Converts the file names from the given directory using the checksum provided and saves those files under the ArtifactID into the new repository inside a folder with the original file name. 
 	Allows the user to check out a specific version of the repo based on their manifest selection.
 	When the user checks in, a new manifest of their edited version is created with the changes logged.
 	The user can label any manifest they'd like so it can have a more user-friendy name for reference.
@@ -55,4 +55,4 @@ Features:
 
 Bugs: 
 	The program only works with folders, plain text files (.txt, .c, .cpp, etc.), and binary files (.bin)
-	The program does not truncate the path in the destination folder. For example: if the source is C:\Downloads\temp1\temp2 		and the destination is C:\test, the repository is in C:\test\Downloads\temp1\temp2 instead of C:\test\temp2
+	The program does not truncate the path in the destination folder. For example: if the source is C:\Downloads\temp1\temp2 and the destination is C:\test, the repository is in C:\test\Downloads\temp1\temp2 instead of C:\test\temp2
