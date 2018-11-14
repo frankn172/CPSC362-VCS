@@ -22,6 +22,21 @@
 #include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
+int prompt()
+{
+	int input;
+	std::cout << "What would you like to do?" << std::endl;
+	std::cout << "1. Create repo" << std::endl;
+	std::cout << "2. Push to repo" << std::endl;
+	std::cout << "3. Pull from repo" << std::endl;
+	std::cout << "4. Label manifest" << std::endl;
+	std::cout << "5. Exit" << std::endl;
+	std::cout << "Enter the number corresponding with the command: ";
+	std::cin >> input;
+	std::cin.ignore(256, '\n');
+	return input;
+}
+
 /**
  * Find the total number of files within a folder and its sub-folders.
  *
@@ -79,7 +94,8 @@ std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path
 	std::string line;
 	int i = 0;
 
-	do {
+	do 
+	{
 		std::getline(latest_manifest, line);
 		changed.push_back(line);
 		for (std::size_t j = 0; j < current.size(); j++)
@@ -89,29 +105,27 @@ std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path
 		}
 		i++;
 	} while (latest_manifest.good());
-
-
 	return changed;
 }
 
 fs::path MostRecentManifest(fs::path man_dir)
 {
-
 	fs::path latest_manifest;
 	std::time_t latest_tm{};
 
-	for (auto&& entry : boost::make_iterator_range(fs::directory_iterator(man_dir), {})) {
+	for (auto&& entry : boost::make_iterator_range(fs::directory_iterator(man_dir), {})) 
+	{
 		fs::path p = entry.path();
 		if (is_regular_file(p) && p.extension() == ".txt")
 		{
 			std::time_t timestamp = fs::last_write_time(p);
-			if (timestamp > latest_tm) {
+			if (timestamp > latest_tm) 
+			{
 				latest_manifest = p;
 				latest_tm = timestamp;
 			}
 		}
 	}
-
 	if (latest_manifest.empty())
 		std::cout << "Nothing found\n";
 	else
@@ -141,7 +155,7 @@ void createManifest(fs::path source)
 		std::ofstream manifest;
 		if (manifest.fail())
 			std::cerr << "Couldn't open the file\n";
-
+		tt = std::chrono::system_clock::to_time_t(today);
 		std::string currentTime = ctime(&tt);
 		manifest << currentTime << std::endl;
 		for (int i = 0; i < container.size(); i++)
@@ -167,7 +181,6 @@ void createManifest(fs::path source)
 		{
 			manifest << vec[i] << "\t" << currentTime << std::endl;
 		}
-
 		manifest.close();
 	}
 }
@@ -187,15 +200,13 @@ void pullFromRepo()
 	std::cout << "What is the label or manifest name you would like to pull? ";
 	std::cin >> label;
 
-	while (labelFileIn.good()) {
+	while (labelFileIn.good()) 
+	{
 
 		std::getline(labelFileIn, line);
-
 		pos = line.find(label);
-
-		if (pos != std::string::npos) {
+		if (pos != std::string::npos)
 			break;
-		}
 	}
 
 	pos = line.find("\t");

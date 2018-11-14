@@ -11,21 +11,6 @@
 
 #include "Header.h"
 
-int prompt()
-{
-	int input;
-	std::cout << "What would you like to do?" << std::endl;
-	std::cout << "Enter the number corresponding with the command" << std::endl;
-	std::cout << "1. Create repo" << std::endl;
-	std::cout << "2. Push to repo" << std::endl;
-	std::cout << "3. Pull from repo" << std::endl;
-	std::cout << "4. Label manifest" << std::endl;
-	std::cout << "5. Exit" << std::endl;
-	std::cin >> input;
-	std::cin.ignore(256, '\n');
-	return input;
-}
-
 void createRepo()
 {
 	std::string source;
@@ -123,7 +108,6 @@ int main()
 		}
 	}
 	std::cout << "Closing program" << std::endl;
-
 
 	system("Pause");
 	return 0;
