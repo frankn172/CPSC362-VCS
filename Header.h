@@ -108,6 +108,42 @@ std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path
 	return changed;
 }
 
+std::vector<std::string> compareFiles(std::string destination_f, std::string source_f)
+{
+    std::ifstream source(source_f);
+    std::ifstream destination(destination_f);
+    std::string line;    
+
+    std::vector<std::string> src , dest;
+
+    do{
+        std::getline(source,line);
+        std::size_t pos = line.find("\t");
+		std::string filename = line.substr(0, pos);
+        src.push_back(filename);
+    }while(source.good());
+
+    do{
+        std::getline(destination,line);
+        std::size_t pos = line.find("\t");
+		std::string filename = line.substr(0, pos);
+        dest.push_back(filename);
+    }while(destination.good());
+    
+    for(std::size_t a =0 ; a < src.size(); a++)
+    {
+        for(std::size_t b =0 ; b < dest.size(); b++)
+        {
+            if(dest[b]==src[a])
+            {
+                src.erase(src.begin()+a);
+            }
+        }
+    }                    
+            
+    return src;
+}
+
 fs::path MostRecentManifest(fs::path man_dir)
 {
 	fs::path latest_manifest;
