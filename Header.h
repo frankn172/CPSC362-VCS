@@ -88,7 +88,7 @@ int checksum(char c, int counter)
 	return checkSum;
 }
 
-// Compares the files to see what's changed
+// Compares the file contents to see what's changed
 std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path file)
 {
 	std::vector<std::string> changed;
@@ -110,6 +110,7 @@ std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path
 	return changed;
 }
 
+// Compares the file names to see what's changed
 std::vector<std::string> compareFiles(std::string destination_f, std::string source_f)
 {
     std::ifstream source(source_f);
@@ -164,10 +165,8 @@ fs::path MostRecentManifest(fs::path man_dir)
 			}
 		}
 	}
-	if (latest_manifest.empty())
-		std::cout << "Nothing found\n";
-	else
-		return latest_manifest;
+
+	return latest_manifest;
 }
 
 std::string getCurrentTime()
@@ -182,9 +181,9 @@ std::string getCurrentTime()
 
 void createManifest(fs::path source)
 {
-	std::string manifest_path = source.parent_path().string() + "\\" + "Manifest";
+	std::string manifest_path = source.string() + "\\" + "Manifest";
 	std::string currentTime = getCurrentTime();
-	std::string t = manifest_path + "\\" + currentTime;
+	std::string t = manifest_path + "\\" + currentTime + ".txt";;
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
@@ -192,7 +191,6 @@ void createManifest(fs::path source)
 	//CREATING MANIFEST DIRECTORY
 	if (fs::create_directory(manifest_path))
 	{
-		std::cerr << "Manifest directory already exists.\n";
 
 		//CREATING MANIFEST FILE
 		std::ofstream manifest;
@@ -209,6 +207,8 @@ void createManifest(fs::path source)
 	}
 	else
 	{
+
+		std::cerr << "Manifest directory already exists.\n";
 		std::ofstream manifest;
 		fs::path man(manifest_path);
 		fs::path recent(MostRecentManifest(man).string());
