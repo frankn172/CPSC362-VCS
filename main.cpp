@@ -23,6 +23,8 @@ void createRepo()
 	std::getline(std::cin, dest);
 	fs::path to{ dest };
 
+	createManifest(source);
+
 	std::vector<fs::directory_entry> container(directorySize(source));
 
 	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());

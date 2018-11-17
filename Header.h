@@ -22,6 +22,7 @@
 #include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
+// Menu prompt
 int prompt()
 {
 	int input;
@@ -87,6 +88,7 @@ int checksum(char c, int counter)
 	return checkSum;
 }
 
+// Compares the files to see what's changed
 std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path file)
 {
 	std::vector<std::string> changed;
@@ -266,4 +268,50 @@ void labelManifest()
 	std::ofstream labelFile("labels.txt", std::ios_base::app);
 
 	labelFile << manName << "\t" << label << " \n";
+}
+
+void push_or_pull(fs::path destination, fs::path source)
+{
+	fs::path dest_man = MostRecentManifest(destination);
+	fs::path source_man = MostRecentManifest(source);
+
+	std::vector<std::string> different = compareFiles(destination.string(), source.string());
+
+	for (int i = 0; i < different.size(); i++)
+	{
+		fs::path different_file(different[i]);
+
+		if (fs::is_regular_file(different_file))
+		{
+			std::ifstream infile(different_file.string());
+			char c;
+			int checkSum = 0, counter = 0;
+			
+			while (infile.get(c))
+			{
+				checkSum += checksum(c, counter);
+				counter++;
+			}
+
+			infile.close();
+
+			std::ifstream newInFile(source.string() + "\\" + different_file.string() + "\\");
+			std::string outputFile = destination.string() + "\\" + different_file.string() + "\\";
+
+			fs::path temp(outputFile.c_str());
+			fs::create_directories(outputFile);
+			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + different_file.extension().string();
+
+			std::ofstream outFile(outputFile);
+			std::string d;
+
+			while (std::getline(newInFile, d))
+			{
+				outFile << d;
+				outFile << "\n";
+			}
+			newInFile.close();
+			outFile.close();
+		}
+	}
 }
