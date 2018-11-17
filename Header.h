@@ -176,14 +176,31 @@ std::string getCurrentTime()
 	time_t tt;
 	tt = std::chrono::system_clock::to_time_t(today);
 	std::string currentTime = ctime(&tt);
-	return currentTime;
+	std::string currentTimeFixed = "";
+	for (int i = 0; i < currentTime.length() - 1; i++)
+	{
+		if (currentTime[i] == ' ')
+		{
+			currentTimeFixed += "_";
+		}
+		else if (currentTime[i] == ':')
+		{
+			currentTimeFixed += "-";
+		}
+		else
+		{
+			currentTimeFixed += currentTime[i];
+		}
+	}
+
+	return currentTimeFixed;
 }
 
 void createManifest(fs::path source)
 {
 	std::string manifest_path = source.string() + "\\" + "Manifest";
 	std::string currentTime = getCurrentTime();
-	std::string t = manifest_path + "\\" + currentTime + ".txt";;
+	std::string t = manifest_path + "\\ " + currentTime + ".txt";
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
@@ -193,7 +210,7 @@ void createManifest(fs::path source)
 	{
 
 		//CREATING MANIFEST FILE
-		std::ofstream manifest;
+		std::ofstream manifest(t);
 		if (manifest.fail())
 			std::cerr << "Couldn't open the file\n";
 		currentTime = getCurrentTime();
@@ -205,6 +222,7 @@ void createManifest(fs::path source)
 		}
 		manifest.close();
 	}
+	
 	else
 	{
 
