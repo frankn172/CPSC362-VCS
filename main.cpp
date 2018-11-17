@@ -55,7 +55,7 @@ void createRepo()
 
 			std::ifstream newInFile(container[i].path().string());
 			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
-			std::cout << container[i].path().filename().string() << std::endl;
+			//std::cout << container[i].path().filename().string() << std::endl;
 
 			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);

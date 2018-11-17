@@ -89,24 +89,28 @@ int checksum(char c, int counter)
 }
 
 // Compares the file contents to see what's changed
-std::vector<std::string> compareFiles(std::vector<std::string> current, fs::path file)
+std::vector<std::string> compareFiles(std::vector<std::string> destination, std::string source)
 {
 	std::vector<std::string> changed;
-	std::ifstream latest_manifest(file.string());
+	std::ifstream latest_manifest(source);
 	std::string line;
-	int i = 0;
 
 	do
 	{
 		std::getline(latest_manifest, line);
-		changed.push_back(line);
-		for (std::size_t j = 0; j < current.size(); j++)
-		{
-			if (current[j] == changed[i])
-				changed.erase(current.begin() + i);
-		}
-		i++;
+		std::size_t pos = line.find("\t");
+		std::string filename = line.substr(0, pos);
+		//if (filename != "\n")
+		changed.push_back(filename);
 	} while (latest_manifest.good());
+	for (std::size_t a = 0; a < changed.size(); a++)
+	{
+		for (std::size_t b = 0; b < destination.size(); b++)
+		{
+			if (destination[b] == changed[a])
+				changed.erase(changed.begin() + a);
+		}
+	}
 	return changed;
 }
 
@@ -218,7 +222,7 @@ void createManifest(fs::path source)
 		for (int i = 0; i < container.size(); i++)
 		{
 			//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
-			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
+			manifest << container[i].path().relative_path().string() << "\t" << std::endl;
 		}
 		manifest.close();
 	}
@@ -227,18 +231,19 @@ void createManifest(fs::path source)
 	{
 
 		std::cerr << "Manifest directory already exists.\n";
-		std::ofstream manifest;
 		fs::path man(manifest_path);
 		fs::path recent(MostRecentManifest(man).string());
+		//std::cout << recent.string() << std::endl;
 		std::vector<std::string> vec;
 		for (int i = 0; i < container.size(); i++)
 		{
 			vec.push_back(container[i].path().relative_path().string());
 		}
-		vec = compareFiles(vec, source.string()); //compare files function is not complete
+		vec = compareFiles(vec, recent.string()); //compare files function is not complete
+		std::ofstream manifest(t);
 		for (int i = 0; i < vec.size(); i++)
 		{
-			manifest << vec[i] << "\t" << currentTime << std::endl;
+			manifest << vec[i] << "\t" << std::endl;
 		}
 		manifest.close();
 	}
