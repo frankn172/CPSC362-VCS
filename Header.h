@@ -88,31 +88,89 @@ int checksum(char c, int counter)
 	return checkSum;
 }
 
+std::string getCurrentTime()
+{
+	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
+	std::chrono::system_clock::time_point today = std::chrono::system_clock::now();
+	time_t tt;
+	tt = std::chrono::system_clock::to_time_t(today);
+	std::string currentTime = ctime(&tt);
+	std::string currentTimeFixed = "";
+	for (int i = 0; i < currentTime.length() - 1; i++)
+	{
+		if (currentTime[i] == ' ')
+		{
+			currentTimeFixed += "_";
+		}
+		else if (currentTime[i] == ':')
+		{
+			currentTimeFixed += "-";
+		}
+		else
+		{
+			currentTimeFixed += currentTime[i];
+		}
+	}
+
+	return currentTimeFixed;
+}
+
 // Compares the file contents to see what's changed
 std::vector<std::string> compareFiles(std::vector<std::string> destination, std::string source)
 {
 	std::vector<std::string> changed;
 	std::ifstream latest_manifest(source);
 	std::string line;
+	std::vector<std::string> dest(destination);
+	std::string time = getCurrentTime();
 
 	do
 	{
 		std::getline(latest_manifest, line);
 		std::size_t pos = line.find("\t");
 		std::string filename = line.substr(0, pos);
-		//if (filename != "\n")
 		changed.push_back(filename);
 	} while (latest_manifest.good());
+
+	for (std::size_t i = 0; i < dest.size(); i++)
+	{
+		std::size_t pos = dest[i].find("\t");
+		dest[i] = dest[i].substr(0, pos);
+	}
+
 	for (std::size_t a = 0; a < changed.size(); a++)
 	{
-		for (std::size_t b = 0; b < destination.size(); b++)
+		for (std::size_t b = 0; b < dest.size(); b++)
 		{
-			if (destination[b] == changed[a])
-				changed.erase(changed.begin() + a);
+			if (dest[b] == changed[a])
+			{
+				std::cout << "Unchanged: " << dest[b] << std::endl;
+				dest.erase(dest.begin() + b);
+			}
 		}
 	}
-	return changed;
+	for (int a = 0; a < destination.size(); a++)
+	{
+		for (int b = 0; b < dest.size(); b++)
+		{
+			std::size_t pos = destination[a].find("\t");
+			std::string filename = destination[a].substr(0, pos);
+
+			if (filename == dest[b])
+			{
+				destination[a] = dest[b];
+				std::cout << "Changed: " << destination[a] << std::endl;
+				dest.erase(dest.begin() + b);
+			}
+		}
+	}
+	for (int i = 0; i < dest.size(); i++)
+		destination.push_back(dest[i] + "\t" + time);
+
+
+	return destination;
 }
+
 
 // Compares the file names to see what's changed
 std::vector<std::string> compareFiles(std::string destination_f, std::string source_f)
@@ -173,33 +231,6 @@ fs::path MostRecentManifest(fs::path man_dir)
 	return latest_manifest;
 }
 
-std::string getCurrentTime()
-{
-	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
-	std::chrono::system_clock::time_point today = std::chrono::system_clock::now();
-	time_t tt;
-	tt = std::chrono::system_clock::to_time_t(today);
-	std::string currentTime = ctime(&tt);
-	std::string currentTimeFixed = "";
-	for (int i = 0; i < currentTime.length() - 1; i++)
-	{
-		if (currentTime[i] == ' ')
-		{
-			currentTimeFixed += "_";
-		}
-		else if (currentTime[i] == ':')
-		{
-			currentTimeFixed += "-";
-		}
-		else
-		{
-			currentTimeFixed += currentTime[i];
-		}
-	}
-
-	return currentTimeFixed;
-}
-
 void createManifest(fs::path source)
 {
 	std::string manifest_path = source.string() + "\\" + "Manifest";
@@ -229,24 +260,32 @@ void createManifest(fs::path source)
 	
 	else
 	{
+		std::cerr << "Manifest already exists\n";
 
-		std::cerr << "Manifest directory already exists.\n";
 		fs::path man(manifest_path);
-		fs::path recent(MostRecentManifest(man).string());
-		//std::cout << recent.string() << std::endl;
+		fs::path recent(MostRecentManifest(man));
 		std::vector<std::string> vec;
+
+		//std::int size= container[i].path().relative_path().string().size();
+		//std::size_t pos = container[i].path().relative_path().string().find("\t");
+		//std::string oldTime = container[i].path().relative_path().string().substr(pos, size);
+
 		for (int i = 0; i < container.size(); i++)
 		{
 			vec.push_back(container[i].path().relative_path().string());
 		}
-		vec = compareFiles(vec, recent.string()); //compare files function is not complete
+
+		vec = compareFiles(vec, recent.string());
+
 		std::ofstream manifest(t);
 		for (int i = 0; i < vec.size(); i++)
 		{
-			manifest << vec[i] << "\t" << std::endl;
+			manifest << vec[i] << "\t" << currentTime << std::endl;
 		}
+
 		manifest.close();
 	}
+
 }
 
 void pushToRepo()
