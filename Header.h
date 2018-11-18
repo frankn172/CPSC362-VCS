@@ -9,6 +9,8 @@
  * Header.h contains the libraries and functions used in main.cpp
 **/
 
+//getCurrentTime() uses a deprecated function ctime() in the ctime library
+//warning C4996 needs to be disabled, otherwise the compiler will throw an error
 #pragma warning(disable : 4996)
 #include <iostream>
 #include <string>
@@ -334,9 +336,11 @@ void createManifest(fs::path source)
 
 /**
  * Push to the Repository 
-   Parameters : source directory and the Repository 
-   -Incomplete 
-   		bug: it makes duplicate files.
+ * 
+ * @param string source path to source folder
+ * @param string dest path to destination folder
+ * 
+ * @bug: make duplicated files
  **/
 void pushToRepo(std::string source, std::string dest)
 {
@@ -390,11 +394,11 @@ void pushToRepo(std::string source, std::string dest)
 
 /**
  * Pull from a repository 
-   Parameters: your own source directory and the Repository
-   -Incomplete : Have yet to find a way to an efficient way to compare the directories.
-   				-because the paths are full paths and we need to reduce them into related paths. 
+ * 
+ * @bug: Have yet to find a way to an efficient way to compare the directories
+ * because the paths are full paths and we need to reduce them into related paths. 
 */
-void pullFromRepo()//unfinished
+void pullFromRepo()
 {
 	std::string line, label, manName;
 	std::size_t pos;
@@ -435,10 +439,13 @@ void labelManifest()
 
 	labelFile << manName << "\t" << label << " \n";
 }
+
 /**
- * Helper function for push and pull that we will eventually use. 
- 	-parameters: given a destination directory and a source directory
- 	-push or pulls based on your parameters.  
+ * Helper function for push and pull that we will eventually use
+ * Push or Pull based on user's parameters
+ * 
+ * @param path destination path to destination folder
+ * @param path source path to source folder
  **/
 void push_or_pull(fs::path destination, fs::path source)
 {
