@@ -11,6 +11,12 @@
 
 #include "Header.h"
 
+/**
+ * Create a new repository
+ * 
+ * @param string source path to source folder
+ * @pagram string dest path to destination folder
+ **/
 void createRepo(std::string source, std::string dest)
 {
 	fs::path from{ source };
