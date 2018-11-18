@@ -11,16 +11,9 @@
 
 #include "Header.h"
 
-void createRepo()
+void createRepo(std::string source, std::string dest)
 {
-	std::string source;
-	std::cout << "Enter the source directory: ";
-	std::getline(std::cin, source);
 	fs::path from{ source };
-
-	std::string dest;
-	std::cout << "Enter the destination directory: ";
-	std::getline(std::cin, dest);
 	fs::path to{ dest };
 
 	std::vector<fs::directory_entry> container(directorySize(source));
@@ -29,14 +22,6 @@ void createRepo()
 
 	for (int i = 0; i < container.size(); i++)
 	{
-		//if the path points to a valid directory within "from"
-		//duplicate it in "dest" inside the correct parent directory
-		/*if (fs::is_directory(container[i].path()))
-		{
-			std::string to2 = dest + "\\" + container[i].path().relative_path().string();
-			fs::path temp{ to2 };
-			fs::create_directories(temp);
-		}*/
 		//if the path points to a file
 		//checksum the file to get ArtifactID
 		if (fs::is_regular_file(container[i].path()))
@@ -55,7 +40,6 @@ void createRepo()
 
 			std::ifstream newInFile(container[i].path().string());
 			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
-			//std::cout << container[i].path().filename().string() << std::endl;
 
 			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);
@@ -81,12 +65,20 @@ int main()
 {
 	int input = prompt();
 
+	std::string source;
+	std::cout << "Enter the source directory: ";
+	std::getline(std::cin, source);
+
+	std::string dest;
+	std::cout << "Enter the destination directory: ";
+	std::getline(std::cin, dest);
+
 	while (input != 5)
 	{
 		if (input == 1)
-			createRepo();
+			createRepo(source, dest);
 		else if (input == 2)
-			prompt();
+			pushToRepo(dest, source);
 		else if (input == 3)
 			pullFromRepo();
 		else if (input == 4)

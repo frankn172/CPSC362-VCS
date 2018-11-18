@@ -261,8 +261,7 @@ void createManifest(fs::path source)
 		manifest << currentTime << std::endl;
 		for (int i = 0; i < container.size(); i++)
 		{
-			//std::string fullpath = source.string() +"\\" + container[i].path().relative_path().string() + "\\";
-			manifest << container[i].path().relative_path().string() << "\t" << std::endl;
+			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
 		}
 		manifest.close();
 	}
@@ -275,9 +274,6 @@ void createManifest(fs::path source)
 		fs::path recent(MostRecentManifest(man));
 		std::vector<std::string> vec;
 
-		//std::int size= container[i].path().relative_path().string().size();
-		//std::size_t pos = container[i].path().relative_path().string().find("\t");
-		//std::string oldTime = container[i].path().relative_path().string().substr(pos, size);
 
 		for (int i = 0; i < container.size(); i++)
 		{
@@ -287,6 +283,9 @@ void createManifest(fs::path source)
 		vec = compareFiles(vec, recent.string());
 
 		std::ofstream manifest(t);
+
+		std::string str = source.relative_path().string() + "\\Manifest\\" + currentTime + ".txt";
+		manifest << str << "\t" << currentTime << std::endl;
 		for (int i = 0; i < vec.size(); i++)
 		{
 			manifest << vec[i] << std::endl;
@@ -294,12 +293,56 @@ void createManifest(fs::path source)
 
 		manifest.close();
 	}
-
 }
 
-void pushToRepo()
+void pushToRepo(std::string source, std::string dest)
 {
-	//TODO
+	fs::path from{ source };
+	fs::path to{ dest };
+
+	std::vector<fs::directory_entry> container(directorySize(source));
+
+	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
+
+	for (int i = 0; i < container.size(); i++)
+	{
+		//if the path points to a file
+		//checksum the file to get ArtifactID
+		if (fs::is_regular_file(container[i].path()))
+		{
+			//go through directory path to file and get its checksum
+			std::ifstream infile(container[i].path().string());
+			char c;
+			int checkSum = 0;
+			int counter = 0;
+			while (infile.get(c))
+			{
+				checkSum += checksum(c, counter);
+				counter++;
+			}
+			infile.close();
+
+			std::ifstream newInFile(container[i].path().string());
+			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
+
+			fs::path temp{ outputFile.c_str() };
+			fs::create_directories(outputFile);
+
+			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + container[i].path().extension().string();
+
+			std::ofstream outFile(outputFile);
+			std::string d;
+			while (std::getline(newInFile, d))
+			{
+				outFile << d;
+				outFile << "\n";
+			}
+			newInFile.close();
+			outFile.close();
+		}
+	}
+
+	createManifest(dest);
 }
 
 void pullFromRepo()
