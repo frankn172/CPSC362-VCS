@@ -1,0 +1,13 @@
+Create Repo 
+Users\jgomb\Desktop\Dest\Manifest\Sat_Nov_17_21-50-16_2018.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\hx.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\hx.txt\72-L1.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\src	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\src\darn.fool.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\src\darn.fool.txt\58269-L79.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\src\main.fool.txt	Sat_Nov_17_21-50-16_2018
+Users\jgomb\Desktop\Dest\Users\jgomb\Desktop\mypt3\src\main.fool.txt\16261-L22.txt	Sat_Nov_17_21-50-16_2018

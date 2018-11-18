@@ -1,0 +1,8 @@
+Create Repo 
+Users\jgomb\Desktop\Repo\Manifest\Sat_Nov_17_21-55-11_2018.txt	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users\jgomb	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users\jgomb\Desktop	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users\jgomb\Desktop\mypt	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users\jgomb\Desktop\mypt\hx.txt	Sat_Nov_17_21-55-11_2018
+Users\jgomb\Desktop\Repo\Users\jgomb\Desktop\mypt\hx.txt\72-L1.txt	Sat_Nov_17_21-55-11_2018
