@@ -118,57 +118,66 @@ std::string getCurrentTime()
 // Compares the file contents to see what's changed
 std::vector<std::string> compareFiles(std::vector<std::string> destination, std::string source)
 {
-	std::vector<std::string> changed;
 	std::ifstream latest_manifest(source);
 	std::string line;
-	std::vector<std::string> dest(destination);
+	std::vector<std::string> changed, changed1, dest(destination);
 	std::string time = getCurrentTime();
+	std::vector<bool> isNew(destination.size(), true);
 
 	do
 	{
 		std::getline(latest_manifest, line);
-		std::size_t pos = line.find("\t");
-		std::string filename = line.substr(0, pos);
-		changed.push_back(filename);
+		if (!line.empty())
+		{
+			changed1.push_back(line);
+			std::size_t pos = line.find("\t");
+			std::string filename = line.substr(0, pos);
+			changed.push_back(filename);
+			//std::cout << "Repo: " << line << std::endl;
+			//std::cout << "stuff: " << filename << std::endl;
+		}
 	} while (latest_manifest.good());
 
-	for (std::size_t i = 0; i < dest.size(); i++)
+	for (std::size_t a = 0; a < dest.size(); a++)
 	{
-		std::size_t pos = dest[i].find("\t");
-		dest[i] = dest[i].substr(0, pos);
-	}
-
-	for (std::size_t a = 0; a < changed.size(); a++)
-	{
-		for (std::size_t b = 0; b < dest.size(); b++)
+		for (std::size_t b = 0; b < changed.size(); b++)
 		{
-			if (dest[b] == changed[a])
+			std::size_t pos = dest[a].find("\t");
+			std::string filename = dest[a].substr(0, pos);
+
+			if (filename == changed[b])
 			{
-				std::cout << "Unchanged: " << dest[b] << std::endl;
-				dest.erase(dest.begin() + b);
+				//std::cout << "Unchanged: " << changed[b] << std::endl;
+				changed.erase(changed.begin() + b);
+				isNew[a] = false;
 			}
 		}
 	}
-	for (int a = 0; a < destination.size(); a++)
+	for (int a = 0; a < changed.size(); a++)
 	{
-		for (int b = 0; b < dest.size(); b++)
+		for (int b = 0; b < changed1.size(); b++)
 		{
-			std::size_t pos = destination[a].find("\t");
-			std::string filename = destination[a].substr(0, pos);
+			std::size_t pos = changed1[b].find("\t");
+			std::string filename = changed1[b].substr(0, pos);
 
-			if (filename == dest[b])
+			if (filename == changed[a])
 			{
-				destination[a] = dest[b];
-				std::cout << "Changed: " << destination[a] << std::endl;
-				dest.erase(dest.begin() + b);
+				changed1[b] = changed[a] + "\t" + time;
+				//std::cout << "Changed: " << changed1[b] << std::endl;
 			}
 		}
 	}
-	for (int i = 0; i < dest.size(); i++)
-		destination.push_back(dest[i] + "\t" + time);
 
+	for (std::size_t a = 0; a < destination.size(); a++)
+	{
+		if (isNew[a])
+		{
+			//std::cout << "New: " << destination[a] << std::endl;
+			changed1.push_back(destination[a] + "\t" + time);
+		}
+	}
 
-	return destination;
+	return changed1;
 }
 
 
@@ -233,9 +242,9 @@ fs::path MostRecentManifest(fs::path man_dir)
 
 void createManifest(fs::path source)
 {
-	std::string manifest_path = source.string() + "\\" + "Manifest";
+	std::string manifest_path = source.string() + "\\Manifest\\";
 	std::string currentTime = getCurrentTime();
-	std::string t = manifest_path + "\\ " + currentTime + ".txt";
+	std::string t = manifest_path + currentTime + ".txt";
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
@@ -280,7 +289,7 @@ void createManifest(fs::path source)
 		std::ofstream manifest(t);
 		for (int i = 0; i < vec.size(); i++)
 		{
-			manifest << vec[i] << "\t" << currentTime << std::endl;
+			manifest << vec[i] << std::endl;
 		}
 
 		manifest.close();
