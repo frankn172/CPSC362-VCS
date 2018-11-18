@@ -22,7 +22,11 @@
 #include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
-// Menu prompt
+/**
+ * Show the menu prompt and ask for user's input
+ * 
+ * @return int user's input
+ **/
 int prompt()
 {
 	int input;
@@ -88,6 +92,11 @@ int checksum(char c, int counter)
 	return checkSum;
 }
 
+/*
+ * Get the current time from system's clock
+ * 
+ * @return string the current time
+ **/
 std::string getCurrentTime()
 {
 	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
@@ -115,7 +124,14 @@ std::string getCurrentTime()
 	return currentTimeFixed;
 }
 
-// Compares the file contents to see what's changed
+/**
+ * Compares the file contents to see what has changed
+ * 
+ * @param string destination path to destination folder
+ * @param string source path to source folder
+ * 
+ * @return vector<string> changed elements
+ **/
 std::vector<std::string> compareFiles(std::vector<std::string> destination, std::string source)
 {
 	std::ifstream latest_manifest(source);
@@ -181,7 +197,14 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 }
 
 
-// Compares the file names to see what's changed
+/**
+ * Compares the file names to see what has changed
+ * 
+ * @param string destination_f filename in destination folder
+ * @param string source_f filename in source folder
+ * 
+ * @return vector<string> changed elements
+ **/
 std::vector<std::string> compareFiles(std::string destination_f, std::string source_f)
 {
     std::ifstream source(source_f);
@@ -218,6 +241,13 @@ std::vector<std::string> compareFiles(std::string destination_f, std::string sou
     return src;
 }
 
+/**
+ * Get the path to the most recent manifest
+ * 
+ * @param path man_dir path to the manifest folder
+ * 
+ * @return path path to the most recent manifest
+ **/
 fs::path MostRecentManifest(fs::path man_dir)
 {
 	fs::path latest_manifest;
@@ -240,11 +270,17 @@ fs::path MostRecentManifest(fs::path man_dir)
 	return latest_manifest;
 }
 
+/**
+ * Create the manifest file
+ * 
+ * @param path source path to the source folder
+ **/
 void createManifest(fs::path source)
 {
 	std::string manifest_path = source.string() + "\\Manifest\\";
 	std::string currentTime = getCurrentTime();
 	std::string t = manifest_path + currentTime + ".txt";
+	std::string str = source.relative_path().string() + "\\Manifest\\" + currentTime + ".txt";
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
@@ -257,8 +293,10 @@ void createManifest(fs::path source)
 		std::ofstream manifest(t);
 		if (manifest.fail())
 			std::cerr << "Couldn't open the file\n";
-		currentTime = getCurrentTime();
-		manifest << currentTime << std::endl;
+
+		manifest << "Create Repo \n";
+		manifest << str << "\t" << currentTime << std::endl;
+
 		for (int i = 0; i < container.size(); i++)
 		{
 			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
@@ -284,7 +322,6 @@ void createManifest(fs::path source)
 
 		std::ofstream manifest(t);
 
-		std::string str = source.relative_path().string() + "\\Manifest\\" + currentTime + ".txt";
 		manifest << str << "\t" << currentTime << std::endl;
 		for (int i = 0; i < vec.size(); i++)
 		{
@@ -295,6 +332,12 @@ void createManifest(fs::path source)
 	}
 }
 
+/**
+ * Push to the Repository 
+   Parameters : source directory and the Repository 
+   -Incomplete 
+   		bug: it makes duplicate files.
+ **/
 void pushToRepo(std::string source, std::string dest)
 {
 	fs::path from{ source };
@@ -345,7 +388,13 @@ void pushToRepo(std::string source, std::string dest)
 	createManifest(dest);
 }
 
-void pullFromRepo()
+/**
+ * Pull from a repository 
+   Parameters: your own source directory and the Repository
+   -Incomplete : Have yet to find a way to an efficient way to compare the directories.
+   				-because the paths are full paths and we need to reduce them into related paths. 
+*/
+void pullFromRepo()//unfinished
 {
 	std::string line, label, manName;
 	std::size_t pos;
@@ -369,6 +418,9 @@ void pullFromRepo()
 	std::cout << manName << std::endl;
 }
 
+/**
+ * Create label for the manifest file
+ **/
 void labelManifest()
 {
 	std::string manName, label;
@@ -383,7 +435,11 @@ void labelManifest()
 
 	labelFile << manName << "\t" << label << " \n";
 }
-
+/**
+ * Helper function for push and pull that we will eventually use. 
+ 	-parameters: given a destination directory and a source directory
+ 	-push or pulls based on your parameters.  
+ **/
 void push_or_pull(fs::path destination, fs::path source)
 {
 	fs::path dest_man = MostRecentManifest(destination);
