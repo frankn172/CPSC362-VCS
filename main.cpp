@@ -1,22 +1,18 @@
 /**
- * CPSC 362 VCS Project
- * Copyright(C) 2018 Team TBD
- * @author Josh Gomberg jgomberg93@gmail.com
- * @author Michael Li limichael1099419@gmail.com
- * @author Frank Ngo frank.ngo@csu.fullerton.edu
- * @author Wellson Pan dihydrogenmonoxide1337@gmail.com
- *
- * main.cpp contains the main source code
+* CPSC 362 VCS Project
+* Copyright(C) 2018 Team TBD
+* @author Josh Gomberg jgomberg93@gmail.com
+* @author Michael Li limichael1099419@gmail.com
+* @author Frank Ngo frank.ngo@csu.fullerton.edu
+* @author Wellson Pan dihydrogenmonoxide1337@gmail.com
+*
+* main.cpp contains the main source code
 **/
 
 #include "Header.h"
 
-/**
- * Create a new repository
- * 
- * @param string source path to source folder
- * @pagram string dest path to destination folder
- **/
+
+
 void createRepo(std::string source, std::string dest)
 {
 	fs::path from{ source };
@@ -44,8 +40,13 @@ void createRepo(std::string source, std::string dest)
 			}
 			infile.close();
 
+			std::string s = container[i].path().string();
+			
+			removeSubstrs(s, from.parent_path().string());
+
 			std::ifstream newInFile(container[i].path().string());
-			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
+
+			std::string outputFile = dest + "\\" + s + "\\";
 
 			fs::path temp{ outputFile.c_str() };
 			fs::create_directories(outputFile);
@@ -86,7 +87,8 @@ int main()
 		else if (input == 2)
 			pushToRepo(dest, source);
 		else if (input == 3)
-			pullFromRepo();
+			//pullFromRepo()
+			;
 		else if (input == 4)
 			labelManifest();
 		else

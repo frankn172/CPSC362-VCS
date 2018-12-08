@@ -1,16 +1,14 @@
 /**
- * CPSC 362 VCS Project
- * Copyright(C) 2018 Team TBD
- * @author Josh Gomberg jgomberg93@gmail.com
- * @author Michael Li limichael1099419@gmail.com
- * @author Frank Ngo frank.ngo@csu.fullerton.edu
- * @author Wellson Pan dihydrogenmonoxide1337@gmail.com
- *
- * Header.h contains the libraries and functions used in main.cpp
+* CPSC 362 VCS Project
+* Copyright(C) 2018 Team TBD
+* @author Josh Gomberg jgomberg93@gmail.com
+* @author Michael Li limichael1099419@gmail.com
+* @author Frank Ngo frank.ngo@csu.fullerton.edu
+* @author Wellson Pan dihydrogenmonoxide1337@gmail.com
+*
+* Header.h contains the libraries and functions used in main.cpp
 **/
 
-//getCurrentTime() uses a deprecated function ctime() in the ctime library
-//warning C4996 needs to be disabled, otherwise the compiler will throw an error
 #pragma warning(disable : 4996)
 #include <iostream>
 #include <string>
@@ -24,11 +22,21 @@
 #include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
+void push_or_pull(std::string, std::string);
+
 /**
- * Show the menu prompt and ask for user's input
- * 
- * @return int user's input
- **/
+* Show the menu prompt and ask for user's input
+*
+* @return int user's input
+**/
+void removeSubstrs(std::string& destination, std::string source) {
+	std::string::size_type n = source.length();
+	for (std::string::size_type i = destination.find(source);
+		i != std::string::npos;
+		i = destination.find(source))
+		destination.erase(i, n);
+}
+
 int prompt()
 {
 	int input;
@@ -45,10 +53,10 @@ int prompt()
 }
 
 /**
- * Find the total number of files within a folder and its sub-folders.
- *
- * @param string p path to the folder
- * @return int the size of that folder
+* Find the total number of files within a folder and its sub-folders.
+*
+* @param string p path to the folder
+* @return int the size of that folder
 **/
 int directorySize(std::string p)
 {
@@ -61,11 +69,11 @@ int directorySize(std::string p)
 }
 
 /**
- * Calculate the weighted checksum.
- *
- * @param char c the character to get the checksum from based on its ASCII value
- * @param int counter the index of char c within a file
- * @return int the weighted checksum
+* Calculate the weighted checksum.
+*
+* @param char c the character to get the checksum from based on its ASCII value
+* @param int counter the index of char c within a file
+* @return int the weighted checksum
 **/
 int checksum(char c, int counter)
 {
@@ -95,10 +103,10 @@ int checksum(char c, int counter)
 }
 
 /*
- * Get the current time from system's clock
- * 
- * @return string the current time
- **/
+* Get the current time from system's clock
+*
+* @return string the current time
+**/
 std::string getCurrentTime()
 {
 	std::chrono::duration<int, std::ratio<60 * 60 * 24> > one_day(1);
@@ -127,13 +135,13 @@ std::string getCurrentTime()
 }
 
 /**
- * Compares the file contents to see what has changed
- * 
- * @param string destination path to destination folder
- * @param string source path to source folder
- * 
- * @return vector<string> changed elements
- **/
+* Compares the file contents to see what has changed
+*
+* @param string destination path to destination folder
+* @param string source path to source folder
+*
+* @return vector<string> changed elements
+**/
 std::vector<std::string> compareFiles(std::vector<std::string> destination, std::string source)
 {
 	std::ifstream latest_manifest(source);
@@ -200,56 +208,56 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 
 
 /**
- * Compares the file names to see what has changed
- * 
- * @param string destination_f filename in destination folder
- * @param string source_f filename in source folder
- * 
- * @return vector<string> changed elements
- **/
+* Compares the file names to see what has changed
+*
+* @param string destination_f filename in destination folder
+* @param string source_f filename in source folder
+*
+* @return vector<string> changed elements
+**/
 std::vector<std::string> compareFiles(std::string destination_f, std::string source_f)
 {
-    std::ifstream source(source_f);
-    std::ifstream destination(destination_f);
-    std::string line;    
+	std::ifstream source(source_f);
+	std::ifstream destination(destination_f);
+	std::string line;
 
-    std::vector<std::string> src , dest;
+	std::vector<std::string> src, dest;
 
-    do{
-        std::getline(source,line);
-        std::size_t pos = line.find("\t");
+	do {
+		std::getline(source, line);
+		std::size_t pos = line.find("\t");
 		std::string filename = line.substr(0, pos);
-        src.push_back(filename);
-    }while(source.good());
+		src.push_back(filename);
+	} while (source.good());
 
-    do{
-        std::getline(destination,line);
-        std::size_t pos = line.find("\t");
+	do {
+		std::getline(destination, line);
+		std::size_t pos = line.find("\t");
 		std::string filename = line.substr(0, pos);
-        dest.push_back(filename);
-    }while(destination.good());
-    
-    for(std::size_t a =0 ; a < src.size(); a++)
-    {
-        for(std::size_t b =0 ; b < dest.size(); b++)
-        {
-            if(dest[b]==src[a])
-            {
-                src.erase(src.begin()+a);
-            }
-        }
-    }                    
-            
-    return src;
+		dest.push_back(filename);
+	} while (destination.good());
+
+	for (std::size_t a = 0; a < src.size(); a++)
+	{
+		for (std::size_t b = 0; b < dest.size(); b++)
+		{
+			if (dest[b] == src[a])
+			{
+				src.erase(src.begin() + a);
+			}
+		}
+	}
+
+	return src;
 }
 
 /**
- * Get the path to the most recent manifest
- * 
- * @param path man_dir path to the manifest folder
- * 
- * @return path path to the most recent manifest
- **/
+* Get the path to the most recent manifest
+*
+* @param path man_dir path to the manifest folder
+*
+* @return path path to the most recent manifest
+**/
 fs::path MostRecentManifest(fs::path man_dir)
 {
 	fs::path latest_manifest;
@@ -273,10 +281,10 @@ fs::path MostRecentManifest(fs::path man_dir)
 }
 
 /**
- * Create the manifest file
- * 
- * @param path source path to the source folder
- **/
+* Create the manifest file
+*
+* @param path source path to the source folder
+**/
 void createManifest(fs::path source)
 {
 	std::string manifest_path = source.string() + "\\Manifest\\";
@@ -305,7 +313,7 @@ void createManifest(fs::path source)
 		}
 		manifest.close();
 	}
-	
+
 	else
 	{
 		std::cerr << "Manifest already exists\n";
@@ -315,9 +323,12 @@ void createManifest(fs::path source)
 		std::vector<std::string> vec;
 
 
+
 		for (int i = 0; i < container.size(); i++)
 		{
-			vec.push_back(container[i].path().relative_path().string());
+			std::string s = container[i].path().string();
+			removeSubstrs(s, source.parent_path().string());
+			vec.push_back(s);
 		}
 
 		vec = compareFiles(vec, recent.string());
@@ -335,70 +346,28 @@ void createManifest(fs::path source)
 }
 
 /**
- * Push to the Repository 
- * 
- * @param string source path to source folder
- * @param string dest path to destination folder
- * 
- * @bug: make duplicated files
- **/
-void pushToRepo(std::string source, std::string dest)
+* Push to the Repository
+Parameters : source directory and the Repository
+-Incomplete
+bug: it makes duplicate files.
+**/
+void pushToRepo(std::string repo, std::string dir)
 {
-	fs::path from{ source };
-	fs::path to{ dest };
 
-	std::vector<fs::directory_entry> container(directorySize(source));
+	createManifest(dir);
 
-	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
+	push_or_pull(repo, dir);
 
-	for (int i = 0; i < container.size(); i++)
-	{
-		//if the path points to a file
-		//checksum the file to get ArtifactID
-		if (fs::is_regular_file(container[i].path()))
-		{
-			//go through directory path to file and get its checksum
-			std::ifstream infile(container[i].path().string());
-			char c;
-			int checkSum = 0;
-			int counter = 0;
-			while (infile.get(c))
-			{
-				checkSum += checksum(c, counter);
-				counter++;
-			}
-			infile.close();
-
-			std::ifstream newInFile(container[i].path().string());
-			std::string outputFile = dest + "\\" + container[i].path().relative_path().string() + "\\";
-
-			fs::path temp{ outputFile.c_str() };
-			fs::create_directories(outputFile);
-
-			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + container[i].path().extension().string();
-
-			std::ofstream outFile(outputFile);
-			std::string d;
-			while (std::getline(newInFile, d))
-			{
-				outFile << d;
-				outFile << "\n";
-			}
-			newInFile.close();
-			outFile.close();
-		}
-	}
-
-	createManifest(dest);
+	createManifest(repo);
 }
 
 /**
- * Pull from a repository 
- * 
- * @bug: Have yet to find a way to an efficient way to compare the directories
- * because the paths are full paths and we need to reduce them into related paths. 
+* Pull from a repository
+Parameters: your own source directory and the Repository
+-Incomplete : Have yet to find a way to an efficient way to compare the directories.
+-because the paths are full paths and we need to reduce them into related paths.
 */
-void pullFromRepo()
+void pullFromRepo(std::string dir, std::string repo)
 {
 	std::string line, label, manName;
 	std::size_t pos;
@@ -420,11 +389,16 @@ void pullFromRepo()
 	manName = line.substr(0, pos);
 
 	std::cout << manName << std::endl;
+
+	push_or_pull(dir, repo);
+
+	createManifest(dir);
+
 }
 
 /**
- * Create label for the manifest file
- **/
+* Create label for the manifest file
+**/
 void labelManifest()
 {
 	std::string manName, label;
@@ -441,14 +415,14 @@ void labelManifest()
 }
 
 /**
- * Helper function for push and pull that we will eventually use
- * Push or Pull based on user's parameters
- * 
- * @param path destination path to destination folder
- * @param path source path to source folder
- **/
-void push_or_pull(fs::path destination, fs::path source)
+* Helper function for push and pull that we will eventually use.
+-parameters: given a destination directory and a source directory
+-push or pulls based on your parameters.
+**/
+void push_or_pull(std::string dest, std::string src)
 {
+	fs::path destination(dest);
+	fs::path source(src);
 	fs::path dest_man = MostRecentManifest(destination);
 	fs::path source_man = MostRecentManifest(source);
 
@@ -456,14 +430,14 @@ void push_or_pull(fs::path destination, fs::path source)
 
 	for (int i = 0; i < different.size(); i++)
 	{
-		fs::path different_file(different[i]);
+		fs::path different_file(source.string() + "\\" + different[i]);
 
 		if (fs::is_regular_file(different_file))
 		{
 			std::ifstream infile(different_file.string());
 			char c;
 			int checkSum = 0, counter = 0;
-			
+
 			while (infile.get(c))
 			{
 				checkSum += checksum(c, counter);
@@ -472,8 +446,10 @@ void push_or_pull(fs::path destination, fs::path source)
 
 			infile.close();
 
-			std::ifstream newInFile(source.string() + "\\" + different_file.string() + "\\");
-			std::string outputFile = destination.string() + "\\" + different_file.string() + "\\";
+			std::ifstream newInFile(src + "\\" + different[i] + "\\");
+			std::string outputFile = dest + "\\" + different[i] + "\\";
+
+
 
 			fs::path temp(outputFile.c_str());
 			fs::create_directories(outputFile);
