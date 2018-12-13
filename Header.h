@@ -314,7 +314,7 @@ void createManifest(fs::path source)
 
 	else
 	{
-		std::cerr << "Manifest already exists\n";
+		//std::cerr << "Manifest already exists\n";
 
 		fs::path man(manifest_path);
 		fs::path recent(MostRecentManifest(man));
@@ -496,14 +496,11 @@ void pullFromRepo(std::string dir, std::string repo)
 
 				files[i] = one.parent_path().string();
 
-				//std::size_t pos = files[i].find_last_of("\\");
-				//files[i] = files[i].erase(0, pos);
-
-				std::cout << "Files" << files[i] << std::endl;
+				//std::cout << "Files" << files[i] << std::endl;
 				
 				fs::path destinado = dir + files[i];
 
-				std::cout << "Destinado:" << destinado << std::endl;
+				//std::cout << "Destinado:" << destinado << std::endl;
 
 				fs::create_directories(destinado.parent_path().string());
 				
