@@ -495,25 +495,32 @@ void pullFromRepo(std::string dir, std::string repo)
 			{
 
 				files[i] = one.parent_path().string();
-				std::string destinado = dir + files[i];
 
-				removeSubstrs(destinado, sauce.string());
+				//std::size_t pos = files[i].find_last_of("\\");
+				//files[i] = files[i].erase(0, pos);
 
-				std::ifstream newInFile(sauce.string());
-				std::ofstream outFile(destinado);
+				std::cout << "Files" << files[i] << std::endl;
+				
+				fs::path destinado = dir + files[i];
 
 				std::cout << "Destinado:" << destinado << std::endl;
 
-				fs::create_directories(destinado);
+				fs::create_directories(destinado.parent_path().string());
+				
+				std::ifstream newInFile(sauce.string());
+				std::ofstream outFile(destinado.string());
+				
 				std::string d;
 				while (std::getline(newInFile, d))
 				{
 					outFile << d;
 					outFile << "\n";
 				}
+
+				newInFile.close();
+				outFile.close();
 			}
 		}
-
 	}
 	
 	createManifest(repo);
