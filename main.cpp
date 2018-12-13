@@ -75,7 +75,7 @@ int main()
 	std::getline(std::cin, source);
 
 	std::string dest;
-	std::cout << "Enter the destination directory: ";
+	std::cout << "Enter the repo directory: ";
 	std::getline(std::cin, dest);
 
 	while (input != 5)
@@ -85,8 +85,7 @@ int main()
 		else if (input == 2)
 			pushToRepo(dest, source);
 		else if (input == 3)
-			//pullFromRepo()
-			;
+			pullFromRepo(source, dest);
 		else if (input == 4)
 			labelManifest();
 		else

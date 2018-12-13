@@ -24,11 +24,6 @@ namespace fs = boost::filesystem;
 
 void push_or_pull(std::string, std::string);
 
-/**
-* Show the menu prompt and ask for user's input
-*
-* @return int user's input
-**/
 void removeSubstrs(std::string& destination, std::string source) {
 	std::string::size_type n = source.length();
 	for (std::string::size_type i = destination.find(source);
@@ -37,6 +32,11 @@ void removeSubstrs(std::string& destination, std::string source) {
 		destination.erase(i, n);
 }
 
+/**
+* Show the menu prompt and ask for user's input
+*
+* @return int user's input
+**/
 int prompt()
 {
 	int input;
@@ -411,6 +411,28 @@ void pushToRepo(std::string repo, std::string dir)
 	}
 }
 
+std::vector<std::string> ReadManifest(std::string manifest)
+{
+	std::ifstream man_file;
+	man_file.open(manifest);
+
+	std::string line;
+	std::vector<std::string> stuff;
+
+	do
+	{
+		std::getline(man_file, line);
+		if (!line.empty())
+		{
+			std::size_t pos = line.find("\t");
+			std::string filename = line.substr(0, pos);
+			stuff.push_back(filename);
+		}
+	} while (man_file.good());
+
+	return stuff;
+}
+
 /**
 * Pull from a repository
 Parameters: your own source directory and the Repository
@@ -421,6 +443,7 @@ void pullFromRepo(std::string dir, std::string repo)
 {
 	std::string line, label, manName;
 	std::size_t pos;
+	int labeled = 0;
 
 	std::ifstream labelFileIn("labels.txt");
 
@@ -431,21 +454,70 @@ void pullFromRepo(std::string dir, std::string repo)
 	{
 		std::getline(labelFileIn, line);
 		pos = line.find(label);
-		if (pos != std::string::npos)
+		if (pos != std::string::npos) {
+			labeled = 1;
 			break;
+		}
 	}
 
-	pos = line.find("\t");
-	manName = line.substr(0, pos);
+	if (labeled == 1) {
+		pos = line.find("\t");
+		manName = line.substr(0, pos);
+	}
 
-	std::cout << manName << std::endl;
+	else
+		manName = label;
 
-	push_or_pull(dir, repo);
+	std::string manifest_file = repo + "\\Manifest\\" + manName + ".txt";
 
-	createManifest(dir);
+	std::vector<std::string> files = ReadManifest(manifest_file);
 
+	//std::cout << manifest_file << std::endl;
+
+	fs::path dest(repo);
+
+	for (size_t i = 0; i < files.size(); i++)
+	{
+		fs::path one(files[i]);
+		fs::path sauce = dest.parent_path().string() + one.string();
+
+		std::cout << "Sauce:" << sauce.string() << std::endl;
+
+		if (fs::is_regular_file(sauce))
+		{
+			size_t found = sauce.string().find("\\Manifest\\");
+			if (found != std::string::npos)
+			{
+				std::cerr << "Don't need to copy Manifest files\n";
+			}
+			
+			else
+			{
+
+				files[i] = one.parent_path().string();
+				std::string destinado = dir + files[i];
+
+				removeSubstrs(destinado, sauce.string());
+
+				std::ifstream newInFile(sauce.string());
+				std::ofstream outFile(destinado);
+
+				std::cout << "Destinado:" << destinado << std::endl;
+
+				fs::create_directories(destinado);
+				std::string d;
+				while (std::getline(newInFile, d))
+				{
+					outFile << d;
+					outFile << "\n";
+				}
+			}
+		}
+
+	}
+	
+	createManifest(repo);
 }
-
 /**
 * Create label for the manifest file
 **/
