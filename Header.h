@@ -290,7 +290,6 @@ void createManifest(fs::path source)
 	std::string manifest_path = source.string() + "\\Manifest\\";
 	std::string currentTime = getCurrentTime();
 	std::string t = manifest_path + currentTime + ".txt";
-	std::string str = source.relative_path().string() + "\\Manifest\\" + currentTime + ".txt";
 
 	std::vector<fs::directory_entry> container(directorySize(source.string()));
 	copy(fs::recursive_directory_iterator(source), fs::recursive_directory_iterator(), container.begin());
@@ -304,12 +303,11 @@ void createManifest(fs::path source)
 		if (manifest.fail())
 			std::cerr << "Couldn't open the file\n";
 
-		manifest << "Create Repo \n";
-		manifest << str << "\t" << currentTime << std::endl;
-
 		for (int i = 0; i < container.size(); i++)
 		{
-			manifest << container[i].path().relative_path().string() << "\t" << currentTime << std::endl;
+			std::string s = container[i].path().string();
+			removeSubstrs(s, source.parent_path().string());
+			manifest << s << "\t" << currentTime << std::endl;
 		}
 		manifest.close();
 	}
@@ -335,7 +333,6 @@ void createManifest(fs::path source)
 
 		std::ofstream manifest(t);
 
-		manifest << str << "\t" << currentTime << std::endl;
 		for (int i = 0; i < vec.size(); i++)
 		{
 			manifest << vec[i] << std::endl;
@@ -353,12 +350,65 @@ bug: it makes duplicate files.
 **/
 void pushToRepo(std::string repo, std::string dir)
 {
+	fs::path from{ dir };
+	fs::path to{ repo };
 
-	createManifest(dir);
+	std::vector<fs::directory_entry> container(directorySize(dir));
 
-	push_or_pull(repo, dir);
+	copy(fs::recursive_directory_iterator(from), fs::recursive_directory_iterator(), container.begin());
 
-	createManifest(repo);
+	for (int i = 0; i < container.size(); i++)
+	{
+		//if the path points to a file
+		//checksum the file to get ArtifactID
+		if (fs::is_regular_file(container[i].path()))
+		{
+			size_t found = container[i].path().string().find("\\Manifest\\");
+			if (found != std::string::npos)
+			{
+				std::cerr << "Don't need to copy Manifest files\n";
+			}
+			else
+			{
+				//go through directory path to file and get its checksum
+				std::ifstream infile(container[i].path().string());
+				char c;
+				int checkSum = 0;
+				int counter = 0;
+				while (infile.get(c))
+				{
+					checkSum += checksum(c, counter);
+					counter++;
+				}
+				infile.close();
+
+				std::string s = container[i].path().string();
+
+				removeSubstrs(s, from.parent_path().string());
+
+				std::ifstream newInFile(container[i].path().string());
+
+				std::string outputFile = repo + "\\" + s + "\\";
+
+				fs::path temp{ outputFile.c_str() };
+				fs::create_directories(outputFile);
+
+				outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + container[i].path().extension().string();
+
+				std::ofstream outFile(outputFile);
+				std::string d;
+				while (std::getline(newInFile, d))
+				{
+					outFile << d;
+					outFile << "\n";
+				}
+				newInFile.close();
+				outFile.close();
+			}
+		}
+
+		createManifest(repo);
+	}
 }
 
 /**
@@ -419,18 +469,32 @@ void labelManifest()
 -parameters: given a destination directory and a source directory
 -push or pulls based on your parameters.
 **/
-void push_or_pull(std::string dest, std::string src)
+void push_or_pull(std::string destination, std::string source)
 {
-	fs::path destination(dest);
-	fs::path source(src);
 	fs::path dest_man = MostRecentManifest(destination);
 	fs::path source_man = MostRecentManifest(source);
 
-	std::vector<std::string> different = compareFiles(destination.string(), source.string());
+	std::ifstream file(dest_man.string());
+	std::string line;
+
+	std::vector <std::string> dest_vec;
+
+	do
+	{
+		std::getline(file, line);
+		if (!line.empty())
+		{
+			dest_vec.push_back(line);
+		}
+	} while (file.good());
+
+	std::vector<std::string> different = compareFiles(dest_vec, source_man.string());
 
 	for (int i = 0; i < different.size(); i++)
 	{
-		fs::path different_file(source.string() + "\\" + different[i]);
+		fs::path different_file(source + "\\" + different[i]);
+
+		std::cout << source + "\\" + different[i] << std::endl;
 
 		if (fs::is_regular_file(different_file))
 		{
@@ -446,10 +510,11 @@ void push_or_pull(std::string dest, std::string src)
 
 			infile.close();
 
-			std::ifstream newInFile(src + "\\" + different[i] + "\\");
-			std::string outputFile = dest + "\\" + different[i] + "\\";
+			fs::path destination = destination;
+			fs::path source = source;
 
-
+			std::ifstream newInFile(source.parent_path().string() + "\\" + different_file.string() + "\\");
+			std::string outputFile = destination.string() + "\\" + different[i] + "\\";
 
 			fs::path temp(outputFile.c_str());
 			fs::create_directories(outputFile);

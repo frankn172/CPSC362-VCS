@@ -11,8 +11,6 @@
 
 #include "Header.h"
 
-
-
 void createRepo(std::string source, std::string dest)
 {
 	fs::path from{ source };
@@ -41,7 +39,7 @@ void createRepo(std::string source, std::string dest)
 			infile.close();
 
 			std::string s = container[i].path().string();
-			
+
 			removeSubstrs(s, from.parent_path().string());
 
 			std::ifstream newInFile(container[i].path().string());
