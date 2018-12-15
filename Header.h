@@ -702,7 +702,7 @@ void Merge(std::string dir, std::string repo)
 
 	std::vector<std::string> same = compare(files, src_man, 3);
 
-	std::vector<std::string> diff = compare(files, src_man, 4);
+	std::vector<std::string> diff = compare(files, src_man, 2);
 
 	for (size_t i=0; i < same.size(); i++)
 		std::cout << "same: " << same[i] << std::endl;
@@ -719,7 +719,7 @@ void Merge(std::string dir, std::string repo)
 		fs::path one(diff[i]);
 		fs::path sauce = dest.parent_path().string() + one.string();
 
-		//std::cout << "Sauce:" << sauce.string() << std::endl;
+		std::cout << "One:" << one.string() << std::endl;
 
 		if (fs::is_regular_file(sauce))
 		{
@@ -738,7 +738,7 @@ void Merge(std::string dir, std::string repo)
 
 				std::cout << "Destinado:" << destinado.string() << std::endl;
 
-				fs::create_directories(destinado.parent_path().string());
+				//fs::create_directories(destinado.parent_path().string());
 
 				std::string tempFilename = "", tempFilename2 = "", tempFilename3 = "";
 
@@ -766,10 +766,13 @@ void Merge(std::string dir, std::string repo)
 				std::cout << "	Temp:" << tempFilename << "	Temp2:" << tempFilename2 << "	Temp3:" << tempFilename3 << std::endl;
 
 				std::ifstream newInFile(sauce.string());
-				std::ofstream outFile(tempFilename3 + '\\' + "MR_" + tempFilename2);
+				std::ofstream outFile(dir + '\\' + "MR_" + tempFilename2);
 
 				//std::ifstream newInFile(sauce.string());
 				//std::ofstream outFile(destinado.string());
+
+				std::cout << "Infile:" << sauce.string() << std::endl;
+				std::cout << "outFile:" << dir + '\\' + "MR_" + tempFilename2 << std::endl;
 
 				std::string d;
 				while (std::getline(newInFile, d))
