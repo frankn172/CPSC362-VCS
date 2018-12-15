@@ -767,6 +767,7 @@ void Merge(std::string dir, std::string repo)
 
 				std::ifstream newInFile(sauce.string());
 				std::ofstream outFile(dir + '\\' + "MR_" + tempFilename2);
+				std::ofstream outFile2(dir + '\\' + "MG_" + tempFilename2);
 
 				//std::ifstream newInFile(sauce.string());
 				//std::ofstream outFile(destinado.string());
@@ -779,10 +780,15 @@ void Merge(std::string dir, std::string repo)
 				{
 					outFile << d;
 					outFile << "\n";
+					outFile2 << d;
+					outFile2 << "\n";
 				}
 
 				newInFile.close();
 				outFile.close();
+
+				fs::path anotherInFile(dir + '\\' + "MT_" + tempFilename2);
+				fs::rename(sauce, anotherInFile);
 			}
 		}
 	}
