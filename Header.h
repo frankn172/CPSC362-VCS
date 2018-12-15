@@ -22,8 +22,10 @@
 #include <boost/range.hpp>
 namespace fs = boost::filesystem;
 
-void push_or_pull(std::string, std::string);
-
+/***Remove Substrs
+	parameter - variable to remove from, variable to remove
+	-passes by reference the first variable
+*/
 void removeSubstrs(std::string& destination, std::string source) {
 	std::string::size_type n = source.length();
 	for (std::string::size_type i = destination.find(source);
@@ -160,8 +162,6 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 			std::size_t pos = line.find("\t");
 			std::string filename = line.substr(0, pos);
 			changed.push_back(filename);
-			//std::cout << "Repo: " << line << std::endl;
-			//std::cout << "stuff: " << filename << std::endl;
 		}
 	} while (latest_manifest.good());
 
@@ -174,7 +174,6 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 
 			if (filename == changed[b])
 			{
-				//std::cout << "Unchanged: " << changed[b] << std::endl;
 				changed.erase(changed.begin() + b);
 				isNew[a] = false;
 			}
@@ -190,7 +189,6 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 			if (filename == changed[a])
 			{
 				changed1[b] = changed[a] + "\t" + time;
-				//std::cout << "Changed: " << changed1[b] << std::endl;
 			}
 		}
 	}
@@ -199,7 +197,6 @@ std::vector<std::string> compareFiles(std::vector<std::string> destination, std:
 	{
 		if (isNew[a])
 		{
-			//std::cout << "New: " << destination[a] << std::endl;
 			changed1.push_back(destination[a] + "\t" + time);
 		}
 	}
@@ -412,6 +409,9 @@ void pushToRepo(std::string repo, std::string dir)
 	}
 }
 
+/*** Reads Manifest file/path
+	-parameter - manifest
+	-output - vector of manifest contents */
 std::vector<std::string> ReadManifest(std::string manifest)
 {
 	std::ifstream man_file;
@@ -473,16 +473,12 @@ void pullFromRepo(std::string dir, std::string repo)
 
 	std::vector<std::string> files = ReadManifest(manifest_file);
 
-	//std::cout << manifest_file << std::endl;
-
 	fs::path dest(repo);
 
 	for (size_t i = 0; i < files.size(); i++)
 	{
 		fs::path one(files[i]);
 		fs::path sauce = dest.parent_path().string() + one.string();
-
-		std::cout << "Sauce:" << sauce.string() << std::endl;
 
 		if (fs::is_regular_file(sauce))
 		{
@@ -496,12 +492,8 @@ void pullFromRepo(std::string dir, std::string repo)
 			{
 
 				files[i] = one.parent_path().string();
-
-				//std::cout << "Files" << files[i] << std::endl;
 				
 				fs::path destinado = dir + files[i];
-
-				//std::cout << "Destinado:" << destinado << std::endl;
 
 				fs::create_directories(destinado.parent_path().string());
 				
@@ -541,76 +533,11 @@ void labelManifest()
 	labelFile << manName << "\t" << label << " \n";
 }
 
-/**
-* Helper function for push and pull that we will eventually use.
--parameters: given a destination directory and a source directory
--push or pulls based on your parameters.
-**/
-void push_or_pull(std::string destination, std::string source)
-{
-	fs::path dest_man = MostRecentManifest(destination);
-	fs::path source_man = MostRecentManifest(source);
-
-	std::ifstream file(dest_man.string());
-	std::string line;
-
-	std::vector <std::string> dest_vec;
-
-	do
-	{
-		std::getline(file, line);
-		if (!line.empty())
-		{
-			dest_vec.push_back(line);
-		}
-	} while (file.good());
-
-	std::vector<std::string> different = compareFiles(dest_vec, source_man.string());
-
-	for (int i = 0; i < different.size(); i++)
-	{
-		fs::path different_file(source + "\\" + different[i]);
-
-		std::cout << source + "\\" + different[i] << std::endl;
-
-		if (fs::is_regular_file(different_file))
-		{
-			std::ifstream infile(different_file.string());
-			char c;
-			int checkSum = 0, counter = 0;
-
-			while (infile.get(c))
-			{
-				checkSum += checksum(c, counter);
-				counter++;
-			}
-
-			infile.close();
-
-			fs::path destination = destination;
-			fs::path source = source;
-
-			std::ifstream newInFile(source.parent_path().string() + "\\" + different_file.string() + "\\");
-			std::string outputFile = destination.string() + "\\" + different[i] + "\\";
-
-			fs::path temp(outputFile.c_str());
-			fs::create_directories(outputFile);
-			outputFile = outputFile + std::to_string(checkSum) + "-L" + std::to_string(counter) + different_file.extension().string();
-
-			std::ofstream outFile(outputFile);
-			std::string d;
-
-			while (std::getline(newInFile, d))
-			{
-				outFile << d;
-				outFile << "\n";
-			}
-			newInFile.close();
-			outFile.close();
-		}
-	}
-}
-
+/*
+	Compare
+	-Compares string vectors to see the difference or similarity
+	-parameter : two string vectors and a mode to determine which vector to return.
+*/
 std::vector<std::string> compare(std::vector<std::string>  one, std::vector<std::string> two, int comp)
 {
 	std::vector<std::string> same;
@@ -653,6 +580,11 @@ std::vector<std::string> compare(std::vector<std::string>  one, std::vector<std:
 		return one;
 }
 
+/*
+	Merge
+	-combines desired manifest contents in the repo with the source directory
+	-parameter = source direectory and repository
+*/
 void Merge(std::string dir, std::string repo)
 {
 
@@ -690,11 +622,7 @@ void Merge(std::string dir, std::string repo)
 
 	fs::path s = MostRecentManifest(man_path);
 
-	std::cout << "Most Recent Man : " << s.string() << std::endl;
-
 	std::vector<std::string> src_man = ReadManifest(s.string());
-
-	//std::cout << "Src Man: " << src_man[0] << std::endl;
 
 	std::string manifest_file = repo + "\\Manifest\\" + manName + ".txt";
 
@@ -704,29 +632,20 @@ void Merge(std::string dir, std::string repo)
 
 	std::vector<std::string> diff = compare(files, src_man, 2);
 
-	for (size_t i=0; i < same.size(); i++)
-		std::cout << "same: " << same[i] << std::endl;
-	
-	for (size_t i = 0; i < diff.size(); i++)
-		std::cout << "diff: " << diff[i] << std::endl;
-
 	fs::path dest(repo);
 
 	for (size_t i = 0; i < diff.size(); i++)
 	{
-		std::cout << diff[i] << std::endl;
 		
 		fs::path one(diff[i]);
 		fs::path sauce = dest.parent_path().string() + one.string();
-
-		std::cout << "One:" << one.string() << std::endl;
 
 		if (fs::is_regular_file(sauce))
 		{
 			size_t found = sauce.string().find("\\Manifest\\");
 			if (found != std::string::npos)
 			{
-				std::cerr << "Don't need to copy Manifest files\n";
+
 			}
 
 			else
@@ -735,10 +654,6 @@ void Merge(std::string dir, std::string repo)
 				diff[i] = one.parent_path().string();
 
 				fs::path destinado = dir + diff[i];
-
-				std::cout << "Destinado:" << destinado.string() << std::endl;
-
-				//fs::create_directories(destinado.parent_path().string());
 
 				std::string tempFilename = "", tempFilename2 = "", tempFilename3 = "";
 
@@ -763,17 +678,9 @@ void Merge(std::string dir, std::string repo)
 					tempFilename2 += tempFilename[i];
 				}
 
-				std::cout << "	Temp:" << tempFilename << "	Temp2:" << tempFilename2 << "	Temp3:" << tempFilename3 << std::endl;
-
 				std::ifstream newInFile(sauce.string());
 				std::ofstream outFile(dir + '\\' + "MR_" + tempFilename2);
 				std::ofstream outFile2(dir + '\\' + "MG_" + tempFilename2);
-
-				//std::ifstream newInFile(sauce.string());
-				//std::ofstream outFile(destinado.string());
-
-				std::cout << "Infile:" << sauce.string() << std::endl;
-				std::cout << "outFile:" << dir + '\\' + "MR_" + tempFilename2 << std::endl;
 
 				std::string d;
 				while (std::getline(newInFile, d))
