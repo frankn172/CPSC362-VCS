@@ -2,7 +2,7 @@ Class Name:
 	CPSC 362 Section 1
 
 Project Name: 
-	VCS Project 2
+	VCS Project 3
 
 Team Name: 
 	TBD (this is our actual TLA)
@@ -23,6 +23,8 @@ Intro:
 		The program prompts the user what manifest or label they would like to pull from. The repo is then created with the proper versions of the files from the manifest.
 	If the user chooses to label a manifest:
 		The program prompts the user for the file name of the manifest they would like to label, then prompts them for the label they would like to give it. The manifest file name and label are stored in a separate text file for reference.
+	If the user chooses to merge:
+		The program prompts the user for the merge and repo directories, and the manifest from which the user wants to merge. The merged file is then put into the merge folder.
 	Once a command is executed the user is brought back to the main prompt and can execute another command or exit.
 
 Files: 
@@ -46,8 +48,8 @@ Features:
 	Allows the user to check out a specific version of the repo based on their manifest selection.
 	When the user checks in, a new manifest of their edited version is created with the changes logged by date.
 	The user can label any manifest they'd like so it can have a more user-friendy name for reference.
+	The user can merge files from the source and the repo referencing the manifest.
 
 Bugs: 
 	The program only works with folders, plain text files (.txt, .c, .cpp, etc.), and binary files (.bin)
 	The program does not truncate the path in the destination folder. For example: if the source is C:\Downloads\temp1\temp2 and the destination is C:\test, the repository is in C:\test\Downloads\temp1\temp2 instead of C:\test\temp2
-	Because of this previous issue, whenever the repo is pushed back to the source, it recreates the whole directory again, and so on, everytime it's pushed or pulled.
