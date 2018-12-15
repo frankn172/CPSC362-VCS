@@ -78,7 +78,7 @@ int main()
 	std::cout << "Enter the repo directory: ";
 	std::getline(std::cin, dest);
 
-	while (input != 5)
+	while (input != 6)
 	{
 		if (input == 1)
 			createRepo(source, dest);
@@ -88,6 +88,8 @@ int main()
 			pullFromRepo(source, dest);
 		else if (input == 4)
 			labelManifest();
+		else if (input == 5)
+			Merge(dest, source);
 		else
 			std::cout << "Please enter a valid input" << std::endl;
 		input = prompt();

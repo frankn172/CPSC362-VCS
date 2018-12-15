@@ -45,7 +45,8 @@ int prompt()
 	std::cout << "2. Push to repo" << std::endl;
 	std::cout << "3. Pull from repo" << std::endl;
 	std::cout << "4. Label manifest" << std::endl;
-	std::cout << "5. Exit" << std::endl;
+	std::cout << "5. Merge" << std::endl;
+	std::cout << "6. Exit" << std::endl;
 	std::cout << "Enter the number corresponding with the command: ";
 	std::cin >> input;
 	std::cin.ignore(256, '\n');
@@ -608,4 +609,145 @@ void push_or_pull(std::string destination, std::string source)
 			outFile.close();
 		}
 	}
+}
+
+std::vector<std::string> compare(std::vector<std::string>  one, std::vector<std::string> two, int comp)
+{
+	std::vector<std::string> same;
+	std::vector<std::string> different;
+
+	for (size_t i = 0; i < one.size(); i++)
+	{
+		for (size_t j = 0; j < two.size(); j++)
+		{
+			if (one[i] == two[j])
+			{
+				two.erase(two.begin() + j);
+				one.erase(one.begin() + i);
+				same.push_back(one[i]);
+			}
+		}
+	}
+
+
+	for (size_t i = 0; i < one.size(); i++)
+	{
+		different.push_back(one[i]);
+	}
+	for (size_t i = 0; i < two.size(); i++)
+	{
+		different.push_back(two[i]);
+	}
+
+
+
+	if (comp == 1)
+		return one;             //1st set - 2nd set
+	else if (comp == 2)
+		return two;                //2nd set - 1st set
+	else if (comp == 3)
+		return same;            //same set
+	else if (comp == 4)
+		return different;
+	else
+		return one;
+}
+
+void Merge(std::string dir, std::string repo)
+{
+
+	std::string line, label, manName;
+	std::size_t pos;
+	int labeled = 0;
+
+	std::ifstream labelFileIn("labels.txt");
+
+	std::cout << "What is the label or manifest name you would like to merge? ";
+	std::cin >> label;
+
+	while (labelFileIn.good())
+	{
+		std::getline(labelFileIn, line);
+		pos = line.find(label);
+		if (pos != std::string::npos) {
+			labeled = 1;
+			break;
+		}
+	}
+
+	if (labeled == 1) {
+		std::size_t pos = line.find("\t");
+		manName = line.substr(0, pos);
+	}
+
+	else
+		manName = label;
+	
+	fs::path sour(dir);
+	createManifest(sour);
+
+	fs::path man_path(dir + "\\Manifest\\");
+
+	fs::path s = MostRecentManifest(man_path);
+
+	std::cout << "Most Recent Man : " << s.string() << std::endl;
+
+	std::vector<std::string> src_man = ReadManifest(s.string());
+
+	//std::cout << "Src Man: " << src_man[0] << std::endl;
+
+	std::string manifest_file = repo + "\\Manifest\\" + manName + ".txt";
+
+	std::vector<std::string> files = ReadManifest(manifest_file);
+
+	std::vector<std::string> same = compare(files, src_man, 3);
+	//std::cout << "same: " << same[0] << std::endl;
+
+	std::vector<std::string> diff = compare(files, src_man, 4);
+
+	//std::cout << "diff: " << diff[0] << std::endl;
+
+	fs::path dest(repo);
+
+	for (size_t i = 0; i < diff.size(); i++)
+	{
+		fs::path one(diff[i]);
+		fs::path sauce = dest.parent_path().string() + one.string();
+
+		std::cout << "Sauce:" << sauce.string() << std::endl;
+
+		if (fs::is_regular_file(sauce))
+		{
+			size_t found = sauce.string().find("\\Manifest\\");
+			if (found != std::string::npos)
+			{
+				std::cerr << "Don't need to copy Manifest files\n";
+			}
+
+			else
+			{
+
+				diff[i] = one.parent_path().string();
+
+				fs::path destinado = dir + diff[i];
+
+
+				fs::create_directories(destinado.parent_path().string());
+
+				std::ifstream newInFile(sauce.string());
+				std::ofstream outFile(destinado.string());
+
+				std::string d;
+				while (std::getline(newInFile, d))
+				{
+					outFile << d;
+					outFile << "\n";
+				}
+
+				newInFile.close();
+				outFile.close();
+			}
+		}
+	}
+
 }
