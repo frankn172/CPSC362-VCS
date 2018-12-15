@@ -701,20 +701,25 @@ void Merge(std::string dir, std::string repo)
 	std::vector<std::string> files = ReadManifest(manifest_file);
 
 	std::vector<std::string> same = compare(files, src_man, 3);
-	//std::cout << "same: " << same[0] << std::endl;
 
 	std::vector<std::string> diff = compare(files, src_man, 4);
 
-	//std::cout << "diff: " << diff[0] << std::endl;
+	for (size_t i=0; i < same.size(); i++)
+		std::cout << "same: " << same[i] << std::endl;
+	
+	for (size_t i = 0; i < diff.size(); i++)
+		std::cout << "diff: " << diff[i] << std::endl;
 
 	fs::path dest(repo);
 
 	for (size_t i = 0; i < diff.size(); i++)
 	{
+		std::cout << diff[i] << std::endl;
+		
 		fs::path one(diff[i]);
 		fs::path sauce = dest.parent_path().string() + one.string();
 
-		std::cout << "Sauce:" << sauce.string() << std::endl;
+		//std::cout << "Sauce:" << sauce.string() << std::endl;
 
 		if (fs::is_regular_file(sauce))
 		{
@@ -731,11 +736,40 @@ void Merge(std::string dir, std::string repo)
 
 				fs::path destinado = dir + diff[i];
 
+				std::cout << "Destinado:" << destinado.string() << std::endl;
 
 				fs::create_directories(destinado.parent_path().string());
 
+				std::string tempFilename = "", tempFilename2 = "", tempFilename3 = "";
+
+				for (int i = sauce.string().length() - 1; i > 0; i--)
+				{
+					if (sauce.string()[i] != '\\')
+					{
+						tempFilename += sauce.string()[i];
+					}
+					else
+					{
+						for (int j = 0; j < i; j++)
+						{
+							tempFilename3 += sauce.string()[j];
+						}
+						break;
+					}
+				}
+
+				for (int i = tempFilename.length() - 1; i >= 0; i--)
+				{
+					tempFilename2 += tempFilename[i];
+				}
+
+				std::cout << "	Temp:" << tempFilename << "	Temp2:" << tempFilename2 << "	Temp3:" << tempFilename3 << std::endl;
+
 				std::ifstream newInFile(sauce.string());
-				std::ofstream outFile(destinado.string());
+				std::ofstream outFile(tempFilename3 + '\\' + "MR_" + tempFilename2);
+
+				//std::ifstream newInFile(sauce.string());
+				//std::ofstream outFile(destinado.string());
 
 				std::string d;
 				while (std::getline(newInFile, d))

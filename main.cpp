@@ -89,7 +89,7 @@ int main()
 		else if (input == 4)
 			labelManifest();
 		else if (input == 5)
-			Merge(dest, source);
+			Merge(source, dest);
 		else
 			std::cout << "Please enter a valid input" << std::endl;
 		input = prompt();
